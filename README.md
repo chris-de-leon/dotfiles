@@ -84,15 +84,7 @@ Download a [Nerd Font](https://www.nerdfonts.com/) of your choice, then create a
 
 1. Open an Alacritty terminal (which should launch WSL)
 
-1. Add the following to `~/.bashrc`, then run `sudo su` followed by `cd ~`:
-
-    ```sh
-    # Always log in as root
-    cd /
-    sudo su
-    ```
-
-1. Once you're logged in as root, add the following to `~/.bashrc` along with any other API keys, special commands, etc. 
+1. Add the following to `~/.bashrc` along with any other API keys, special commands, etc. 
 
     ```sh
     ##################
@@ -116,11 +108,6 @@ Download a [Nerd Font](https://www.nerdfonts.com/) of your choice, then create a
     export GITHUB_PAT="your github personal access token"
     if [ ! -f ~/.git-credentials ]; then
       echo "https://$GITHUB_UNAME:$GITHUB_PAT@github.com" >~/.git-credentials
-    fi
-
-    # If starship is available, use it to make the prompt pretty
-    if command -v starship &>/dev/null; then
-      eval "$(starship init bash)"
     fi
     ```
 
@@ -159,7 +146,7 @@ Download a [Nerd Font](https://www.nerdfonts.com/) of your choice, then create a
 
 1. Close the current terminal
 
-1. Open a new Alacritty terminal, log in, and run `cd ~`
+1. Open a new Alacritty terminal
 
 1. To make sure all packages are up to date and enter a fully configured dev shell, you can run:
 
