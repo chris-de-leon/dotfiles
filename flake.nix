@@ -9,13 +9,13 @@
     utils.lib.eachDefaultSystem(system:
       let
         pkgs = import nixpkgs { inherit system; };
+        dotfiles = import ./default.nix { inherit pkgs; };
       in {
-        defaultPackage = pkgs.callPackage ./shell.nix {
-          inherit pkgs;
-        };
+        defaultPackage = dotfiles;
 
-        devShell = pkgs.callPackage ./shell.nix {
-          inherit pkgs;
+        devShell = pkgs.mkShell {
+          buildInputs = dotfiles.buildInputs;
+          shellHook = dotfiles.shellHook;
         };
       }
     );
