@@ -12,9 +12,6 @@ let
       set -e
       mkdir -p $out
       cp -rv $src/* $out
-      chmod 777 $out/starship.toml
-      chmod 777 $out/tmux.conf
-      chmod 777 $out/bashrc
       cat <<EOT >> $out/bashrc
 
 # Configure tmux to use an interactive non-login shell then have it source our custom bashrc file and use our custom configs:
@@ -54,5 +51,9 @@ stdenv.mkDerivation {
     pkgs.fd
     pkgs.jq
   ];
-  shellHook = ''. ${content}/bashrc'';
+  shellHook = ''
+    export DOTFILES_BASHRC=${content}/bashrc
+    export DOTFILES_HOME=${content}
+    . ${content}/bashrc
+  '';
 }
