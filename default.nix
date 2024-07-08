@@ -12,7 +12,6 @@ let
       set -ex
       mkdir -p $out
       cp -rv $src/* $out
-      chmod 777 $out/bashrc
       cat <<EOT >> $out/bashrc
 
 # Configure tmux to use an interactive non-login shell then have it source our custom bashrc file and use our custom configs:
