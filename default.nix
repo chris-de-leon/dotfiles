@@ -16,7 +16,9 @@ let
       mkdir -p $out
       cp -rv $src/* $out
 
-      # Tells Nix to give bashrc executable permissions: https://stackoverflow.com/a/61736179
+      # Grants elevated permissions to tmux.conf and bashrc. In the end, these 
+      # will be given 555 permissions: https://stackoverflow.com/a/61736179
+      chmod 777 $out/tmux.conf
       chmod 777 $out/bashrc
       
       # Configures tmux to use an interactive non-login shell and source our custom bashrc file:
