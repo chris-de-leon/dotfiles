@@ -4,9 +4,11 @@
 
 ### Ubuntu Desktop (v24.04 LTS, noble)
 
-#### Docker Desktop
+#### Multipass
 
-Follow the official installation instructions [here](https://docs.docker.com/desktop/install/ubuntu/#prerequisites) to install Docker Desktop if you haven't already. To sign into Docker Desktop, follow the official instructions [here](https://docs.docker.com/desktop/get-started/#signing-in-with-docker-desktop-for-linux).
+1. Use the App Center to install Multipass
+1. Launch the Multipass app
+1. Open a new terminal and create a new VM: `multipass launch docker --name=dev --cpus=... --memory=...G --disk=...`
 
 #### Alacritty
 
@@ -57,6 +59,8 @@ Follow the official installation instructions [here](https://docs.docker.com/des
   key = "C"
   mods = "Control|Shift"
   ```
+
+1. Open a new Alacritty terminal and start a new shell session in the multipass VM: `multipass shell dev`
 
 ### Windows + WSL Setup
 
