@@ -13,11 +13,11 @@
 #### Alacritty
 
 1. Use the App Center to install Alacritty
-1. Download a [Nerd Font](https://www.nerdfonts.com/) of your choice (CaskaydiaCove is recommended)
-1. Unzip the font
-1. Copy the font files to `~/.fonts`
-1. Run `fc-cache -fv` to update Ubuntu's font cache
-1. Create an Alacritty config file at `~/.config/alacritty/alacritty.toml` with the following values (the font family should be modified accordingly if you chose a font other than CaskaydiaCove):
+2. Download a [Nerd Font](https://www.nerdfonts.com/) of your choice (CaskaydiaCove is recommended)
+3. Unzip the font
+4. Copy the font files to `~/.fonts`
+5. Run `fc-cache -fv` to update Ubuntu's font cache
+6. Create an Alacritty config file at `~/.config/alacritty/alacritty.toml` with the following values (the font family should be modified accordingly if you chose a font other than CaskaydiaCove):
 
   ```toml
   [font]
@@ -60,7 +60,7 @@
   mods = "Control|Shift"
   ```
 
-1. Open a new Alacritty terminal and start a new shell session in the multipass VM: `multipass shell dev`
+7. Open a new Alacritty terminal and start a new shell session in the multipass VM: `multipass shell dev`
 
 ### Windows + WSL Setup
 
