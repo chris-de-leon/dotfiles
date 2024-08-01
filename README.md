@@ -8,7 +8,7 @@
 
 1. Use the App Center to install Multipass
 1. Launch the Multipass app
-1. Open a new terminal and create a new VM: `multipass launch docker --name=dev --cpus=... --memory=...G --disk=...`
+1. Open a new terminal and create a new VM: `multipass launch docker --name=dev --cpus=... --memory=... --disk=...`
 
 #### Alacritty
 
