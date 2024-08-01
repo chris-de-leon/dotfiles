@@ -66,7 +66,7 @@ Follow the official installation instructions [here](https://www.docker.com/prod
 
 #### Alacritty 
 
-1. Use the `.msi` installer on the [Alacritty releases](https://github.com/alacritty/alacritty/releases/tag/v0.13.2) page to install alacritty.
+1. Use the `.msi` installer on the [Alacritty releases](https://github.com/alacritty/alacritty/releases/tag/v0.13.2) page to install alacritty
 1. Download a [Nerd Font](https://www.nerdfonts.com/) of your choice and make sure it is added to your font library
 1. Create an Alacritty config file at `Users/<your user>/AppData/Roaming/alacritty/alacritty.toml` with the following values (the font family should be modified accordingly if you chose a font other than CaskaydiaCove):
 
@@ -142,7 +142,7 @@ Follow the official installation instructions [here](https://learn.microsoft.com
 
 1. Open an Alacritty terminal (which should launch WSL)
 
-1. Add the following to `~/.bashrc` along with any other API keys, special commands, etc. 
+1. Add the following to `~/.bashrc` along with any other API keys, special commands, etc.
 
     ```sh
     ##################
