@@ -1,25 +1,81 @@
 # Dotfiles
 
-## Windows + WSL Setup
+## Setup
 
-### Software
+### Ubuntu Desktop (v24.04 LTS, noble)
 
-Install the following software:
+#### Alacritty
 
-  - [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install)
-  - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-  - [Alacritty](https://github.com/alacritty/alacritty/releases/tag/v0.13.2)
+1. Use the App Center to install Alacritty
+1. Download a [Nerd Font](https://www.nerdfonts.com/) of your choice (CaskaydiaCove is recommended)
+1. Unzip the font
+1. Copy the font files to `~/.fonts`
+1. Run `fc-cache -fv` to update Ubuntu's font cache
+1. Create an Alacritty config file at `~/.config/alacritty/alacritty.toml` with the following values (the font family should be modified accordingly if you chose a font other than CaskaydiaCove):
 
-### Setting up WSL
+  ```toml
+  [font]
+  size = 12.0 # modify as needed
 
-#### Starting Fresh
+  [font.bold]
+  family = "CaskaydiaCove Nerd Font"
+  style = "Regular"
+
+  [font.bold_italic]
+  family = "CaskaydiaCove Nerd Font"
+  style = "Regular"
+
+  [font.italic]
+  family = "CaskaydiaCove Nerd Font"
+  style = "Regular"
+
+  [font.normal]
+  family = "CaskaydiaCove Nerd Font"
+  style = "Regular"
+
+  [[keyboard.bindings]]
+  action = "Paste"
+  key = "V"
+  mods = "Control"
+
+  [[keyboard.bindings]]
+  action = "Copy"
+  key = "C"
+  mods = "Control"
+
+  [[keyboard.bindings]]
+  chars = "\u0016"
+  key = "V"
+  mods = "Control|Shift"
+
+  [[keyboard.bindings]]
+  chars = "\u0003"
+  key = "C"
+  mods = "Control|Shift"
+  ```
+
+#### Docker Desktop
+
+Follow the official installation instructions [here](https://docs.docker.com/desktop/install/ubuntu/#prerequisites) to install Docker Desktop if you haven't already. If you'd like to sign into Docker Desktop, you can follow the instructions [here](https://docs.docker.com/desktop/get-started/#signing-in-with-docker-desktop-for-linux).
+
+### Windows + WSL Setup
+
+#### Docker Desktop
+
+Follow the official installation instructions [here](https://www.docker.com/products/docker-desktop/) to install Docker Desktop if you haven't already.
+
+#### WSL
+
+Follow the official installation instructions [here](https://learn.microsoft.com/en-us/windows/wsl/install) to install WSL 2 if you haven't already.
+
+##### Starting Fresh
 
 1. Open a command prompt
 1. List the distros available for download: `wsl -l -o`
 1. Install the distro of your choice: `wsl --install -d <distro>`
 1. Enter a username and password for the distro
 
-#### Upgrading
+##### Upgrading
 
 1. Open a command prompt
 1. Make a backup of your files
@@ -29,9 +85,11 @@ Install the following software:
 1. Install the distro of your choice: `wsl --install -d <distro>`
 1. Enter a username and password for the distro
 
-### Setting up Alacritty 
+#### Setting up Alacritty 
 
-Download a [Nerd Font](https://www.nerdfonts.com/) of your choice, then create an `alacritty.toml` file at `Users/<your user>/AppData/Roaming/alacritty/alacritty.toml` with the following values (the font family should be modified accordingly if you chose a font other than CaskaydiaCove):
+1. Use the `.msi` installer on the [Alacritty releases](https://github.com/alacritty/alacritty/releases/tag/v0.13.2) page to install alacritty.
+1. Download a [Nerd Font](https://www.nerdfonts.com/) of your choice and make sure it is added to your font library
+1. Create an Alacritty config file at `Users/<your user>/AppData/Roaming/alacritty/alacritty.toml` with the following values (the font family should be modified accordingly if you chose a font other than CaskaydiaCove):
 
   ```toml
   [font]
@@ -78,7 +136,7 @@ Download a [Nerd Font](https://www.nerdfonts.com/) of your choice, then create a
   program = 'C:\Windows\System32\wsl.exe'
   ```
 
-#### Setting up Dev Tools
+## Setting up Dev Tools
 
 1. Create a [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) in Github
 
