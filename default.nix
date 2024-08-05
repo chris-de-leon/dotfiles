@@ -6,6 +6,7 @@ let
     if [ -f "$HOME/.bashrc" ]; then
       . "$HOME/.bashrc"
     fi
+
   '';
 in
 stdenv.mkDerivation {
@@ -25,8 +26,16 @@ stdenv.mkDerivation {
     chmod 777 $out/tmux.conf
     chmod 777 $out/bashrc
 
-    # Add starship setup commands to bashrc
-    printf "\nexport STARSHIP_CONFIG=\"$out/starship.toml\" && eval \"\$(starship init bash)\"" >> "$out/bashrc"
+    # If you are already in a `nix develop` shell session and you start a new nested nix shell with 
+    # `nix develop`, then Nix will reset PS1, remove any unexported functions that were defined in 
+    # your previous shell, and remove any environment variables that reference unexported functions
+    # (e.g. PROMPT_COMMAND). This is problematic because if our previous shell was styled using let's
+    # say starship for example, then any command prompt styling that starship provided would not be
+    # carried over to the nested shell. To fix this, we'll use `set -a` and `set +a` so that all the
+    # starship functions we need are exported properly: https://unix.stackexchange.com/a/430690
+    export starship_setup_cmd="export STARSHIP_CONFIG=\"$out/starship.toml\" && set -a && eval \"\$(starship init bash)\" && set +a"
+    printf "$starship_setup_cmd" >> "$out/starshiprc"
+    printf "$starship_setup_cmd" >> "$out/bashrc"
 
     # Configures tmux to use an interactive non-login shell and source our custom bashrc file:
     #
