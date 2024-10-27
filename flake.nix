@@ -12,66 +12,58 @@
         dotfiles = import ./default.nix { inherit pkgs; };
       in
       rec {
-        # Environment variables
-        DOTFILES_DIR = "${pkgs.lib.strings.removePrefix "/nix/store/" "${dotfiles}"}";
-        DOTFILES_DST = "/tmp/${DOTFILES_DIR}";
-        DOTFILES_SRC = "${dotfiles}";
-
-        # Nix formatter
         formatter = pkgs.nixpkgs-fmt;
 
-        # Configures starship to use our custom configs:
-        #  - https://starship.rs/config/#configuration
-        #
-        wrappedStarship = pkgs.symlinkJoin {
-          name = "starship";
-          paths = [ pkgs.starship ];
-          buildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram $out/bin/starship \
-              --set "STARSHIP_CONFIG" "${DOTFILES_DST}/starship.toml"
-          '';
-          preBuild = ''
-            set -x
-            echo "${DOTFILES_DST}"
-          '';
-        };
+        devShell = pkgs.mkShell rec {
+          DOTFILES_DIR = "${pkgs.lib.strings.removePrefix "/nix/store/" "${dotfiles}"}";
+          DOTFILES_REL = ".config/dotfiles/chris-de-leon/${DOTFILES_DIR}";
+          DOTFILES_DST = "${"$"}HOME/${DOTFILES_REL}";
+          DOTFILES_SRC = "${dotfiles}";
 
-        # Configures tmux to use our custom configs:
-        #  - https://unix.stackexchange.com/a/663023
-        #  - https://askubuntu.com/a/746846
-        #
-        wrappedTmux = pkgs.symlinkJoin {
-          name = "tmux";
-          paths = [ pkgs.tmux ];
-          buildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram $out/bin/tmux \
-              --add-flags "-u" \
-              --add-flags "-f" \
-              --add-flags "${DOTFILES_DST}/tmux.conf"
-          '';
-        };
+          # Configures starship to use our custom configs:
+          #  - https://starship.rs/config/#configuration
+          #
+          wrappedStarship = pkgs.symlinkJoin {
+            name = "starship";
+            paths = [ pkgs.starship ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/starship \
+                --run "export STARSHIP_CONFIG=\$HOME/${DOTFILES_REL}/starship.toml"
+            '';
+          };
 
-        # Configures neovim to use our custom configs:
-        #  - https://vi.stackexchange.com/questions/37639/viminit-conflicts-for-neovim-and-vim
-        #  - https://neovim.io/doc/user/starting.html#initialization
-        #  - https://stackoverflow.com/a/75633317
-        #
-        wrappedNvim = pkgs.symlinkJoin {
-          name = "nvim";
-          paths = [ pkgs.neovim ];
-          buildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram $out/bin/nvim \
-              --set "XDG_CONFIG_HOME" "${DOTFILES_DST}" \
-              --set "NVIM_APPNAME" "nvim"
-          '';
-        };
+          # Configures tmux to use our custom configs:
+          #  - https://unix.stackexchange.com/a/663023
+          #  - https://askubuntu.com/a/746846
+          #
+          wrappedTmux = pkgs.symlinkJoin {
+            name = "tmux";
+            paths = [ pkgs.tmux ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/tmux \
+                --add-flags "-u" \
+                --add-flags "-f" \
+                --add-flags "\$HOME/${DOTFILES_REL}/tmux.conf"
+            '';
+          };
 
-        devShell = pkgs.mkShell {
-          DOTFILES_DST = "${DOTFILES_DST}";
-          DOTFILES_SRC = "${DOTFILES_SRC}";
+          # Configures neovim to use our custom configs:
+          #  - https://vi.stackexchange.com/questions/37639/viminit-conflicts-for-neovim-and-vim
+          #  - https://neovim.io/doc/user/starting.html#initialization
+          #  - https://stackoverflow.com/a/75633317
+          #
+          wrappedNvim = pkgs.symlinkJoin {
+            name = "nvim";
+            paths = [ pkgs.neovim ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/nvim \
+                --run "export XDG_CONFIG_HOME=\$HOME/${DOTFILES_REL}" \
+                --set "NVIM_APPNAME" "nvim"
+            '';
+          };
 
           packages = [
             wrappedStarship
