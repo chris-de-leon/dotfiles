@@ -13,7 +13,8 @@
       in
       rec {
         # Environment variables
-        DOTFILES_DST = "/dotfiles/chris-de-leon/${pkgs.lib.strings.removePrefix "/nix/store/" "${dotfiles}"}";
+        DOTFILES_DIR = "${pkgs.lib.strings.removePrefix "/nix/store/" "${dotfiles}"}";
+        DOTFILES_DST = "/tmp/${DOTFILES_DIR}";
         DOTFILES_SRC = "${dotfiles}";
 
         # Nix formatter
@@ -23,12 +24,16 @@
         #  - https://starship.rs/config/#configuration
         #
         wrappedStarship = pkgs.symlinkJoin {
-          name = "nvim";
+          name = "starship";
           paths = [ pkgs.starship ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/starship \
               --set "STARSHIP_CONFIG" "${DOTFILES_DST}/starship.toml"
+          '';
+          preBuild = ''
+            set -x
+            echo "${DOTFILES_DST}"
           '';
         };
 
