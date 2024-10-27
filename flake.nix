@@ -1,7 +1,7 @@
 {
-  # https://github.com/NixOS/nixpkgs/commit/9f4128e00b0ae8ec65918efeba59db998750ead6
+  # https://github.com/NixOS/nixpkgs/commits/master
   inputs = {
-    nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/9f4128e00b0ae8ec65918efeba59db998750ead6.tar.gz";
+    nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/be77f97455fc7f17d3deabe790d7a7a1c3cdd899.tar.gz";
     utils.url = "github:numtide/flake-utils";
   };
 
@@ -12,7 +12,25 @@
         dotfiles = import ./default.nix { inherit pkgs; };
       in
       rec {
+        # Environment variables
+        DOTFILES_DST = "/dotfiles/chris-de-leon/${pkgs.lib.strings.removePrefix "/nix/store/" "${dotfiles}"}";
+        DOTFILES_SRC = "${dotfiles}";
+
+        # Nix formatter
         formatter = pkgs.nixpkgs-fmt;
+
+        # Configures starship to use our custom configs:
+        #  - https://starship.rs/config/#configuration
+        #
+        wrappedStarship = pkgs.symlinkJoin {
+          name = "nvim";
+          paths = [ pkgs.starship ];
+          buildInputs = [ pkgs.makeWrapper ];
+          postBuild = ''
+            wrapProgram $out/bin/starship \
+              --set "STARSHIP_CONFIG" "${DOTFILES_DST}/starship.toml"
+          '';
+        };
 
         # Configures tmux to use our custom configs:
         #  - https://unix.stackexchange.com/a/663023
@@ -26,7 +44,7 @@
             wrapProgram $out/bin/tmux \
               --add-flags "-u" \
               --add-flags "-f" \
-              --add-flags "${dotfiles}/tmux.conf"
+              --add-flags "${DOTFILES_DST}/tmux.conf"
           '';
         };
 
@@ -41,15 +59,17 @@
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/nvim \
-              --set "XDG_CONFIG_HOME" "${dotfiles}" \
+              --set "XDG_CONFIG_HOME" "${DOTFILES_DST}" \
               --set "NVIM_APPNAME" "nvim"
           '';
         };
 
         devShell = pkgs.mkShell {
-          DOTFILES_HOME = "${dotfiles}";
+          DOTFILES_DST = "${DOTFILES_DST}";
+          DOTFILES_SRC = "${DOTFILES_SRC}";
+
           packages = [
-            pkgs.starship
+            wrappedStarship
             pkgs.unzipNLS
             pkgs.ripgrep
             pkgs.lazygit
@@ -59,8 +79,41 @@
             pkgs.fd
             pkgs.jq
           ];
+
           shellHook = ''
-            . ${dotfiles}/starshiprc
+            if [ ! -d ${DOTFILES_DST} ]; then
+              # Create a folder to store the dotfiles
+              mkdir -p ${DOTFILES_DST}
+
+              # All files in /nix/store are readonly: https://nix.dev/manual/nix/2.23/installation/multi-user#multi-user-mode 
+              # This is problematic because some programs (e.g. neovim) need to write to them to ensure things are configured 
+              # properly. To get around this we'll copy the files from /nix/store, reset their permissions, and store them in 
+              # the destination folder, which should be writable
+              cp --no-preserve=mode -r ${DOTFILES_SRC}/* ${DOTFILES_DST}
+
+              # Configure tmux to use an interactive non-login shell that sources the wrapper bashrc file:
+              #
+              #  - https://discourse.nixos.org/t/interactive-bash-with-nix-develop-flake/15486
+              #  - https://unix.stackexchange.com/a/98085
+              #  - https://unix.stackexchange.com/a/541352
+              #  - https://stackoverflow.com/a/45389462
+              #
+              if ! grep -q 'set-option -g default-command' "${DOTFILES_DST}/tmux.conf"; then
+                echo "set-option -g default-command \"${pkgs.bashInteractive}/bin/bash --rcfile \"${DOTFILES_DST}/bashrc\"\"" >> "${DOTFILES_DST}/tmux.conf"
+              fi
+
+              # If you're already in a `nix develop` shell session and you start a new nested nix shell with `nix develop`, then
+              # Nix will reset PS1, remove any unexported functions that were defined in your previous shell, and remove any env
+              # variables that reference unexported functions (e.g. PROMPT_COMMAND). This is problematic because if our previous
+              # shell was styled using let's say starship for example, then any command prompt styling that starship has provided
+              # wouldn't be carried over to the nested shell session. To fix this, we will use `set -a` and `set +a` so that all 
+              # the starship functions we need are exported properly: https://unix.stackexchange.com/a/430690
+              export starship_setup_cmd="set -a && eval \"\$(${wrappedStarship}/bin/starship init bash)\" && set +a"
+              printf "$starship_setup_cmd" >> "${DOTFILES_DST}/starshiprc"
+              printf "$starship_setup_cmd" >> "${DOTFILES_DST}/bashrc"
+            fi
+
+            . ${DOTFILES_DST}/starshiprc
           '';
         };
       }
