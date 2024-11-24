@@ -5,7 +5,7 @@
 -- https://www.reddit.com/r/neovim/comments/10aqgmy/tab_isnt_working_for_me/
 vim.keymap.set("n", "<TAB>", ">>")
 vim.keymap.set("n", "<S-TAB>", "<<")
-vim.keymap.set("i", "<TAB>", ">>")
-vim.keymap.set("i", "<S-TAB>", "<<")
+vim.keymap.set("i", "<TAB>", "  ")
+vim.keymap.set("i", "<S-TAB>", "<C-O>2dh")
 vim.keymap.set("v", "<TAB>", ">gv")
 vim.keymap.set("v", "<S-TAB>", "<gv")
