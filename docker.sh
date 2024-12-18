@@ -1,7 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
 docker run --rm \
   -v ~/.gitconfig:/root/.gitconfig \
   -v ~/.bashrc:/root/.bashrc \
-  -v $(pwd):/root/dotfiles \
+  -v "$(pwd):/root/dotfiles" \
   -w /root/dotfiles \
   -e "TERM=$TERM" \
   -e "LANG=C.UTF-8" \

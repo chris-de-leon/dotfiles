@@ -1,7 +1,7 @@
 {
   # https://github.com/NixOS/nixpkgs/commits/master
   inputs = {
-    nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/be77f97455fc7f17d3deabe790d7a7a1c3cdd899.tar.gz";
+    nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/84f1dd259e41cd9d98ea7c6d6eb9b582312791aa.tar.gz";
     utils.url = "github:numtide/flake-utils";
   };
 
@@ -67,6 +67,7 @@
 
           packages = [
             wrappedStarship
+            pkgs.shellcheck
             pkgs.unzipNLS
             pkgs.ripgrep
             pkgs.lazygit
