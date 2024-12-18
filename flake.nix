@@ -72,6 +72,7 @@
             pkgs.lazygit
             wrappedNvim
             wrappedTmux
+            pkgs.fzf
             pkgs.vim
             pkgs.fd
             pkgs.jq
