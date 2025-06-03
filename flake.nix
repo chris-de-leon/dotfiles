@@ -38,6 +38,7 @@
             pkgs.ripgrep
             pkgs.lazygit
             pkgs.gnumake
+            pkgs.chezmoi
             pkgs.neovim
             wrappedTmux
             pkgs.gcc
