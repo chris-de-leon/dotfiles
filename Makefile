@@ -71,7 +71,7 @@ nixshell:
 			'github:NixOS/nixpkgs/nixos-25.05#chezmoi' \
 			'github:NixOS/nixpkgs/nixos-25.05#nodejs' \
 			'github:NixOS/nixpkgs/nixos-25.05#gh' \
-			--command bash;
+			--command bash; \
 	else \
 		nix profile install \
 			'github:NixOS/nixpkgs/nixos-25.05#lastpass-cli' \
@@ -83,7 +83,8 @@ nixshell:
 
 .PHONY: nixprofile
 nixprofile:
-	mkdir -p $(NIX_PROFILE_DIR) && nix profile install --print-build-logs --refresh --profile $(NIX_PROFILE_DIR) .
+	@rm -rf $(NIX_PROFILE_DIR) && mkdir -p $(NIX_PROFILE_DIR)
+	@nix profile install --print-build-logs --refresh --profile $(NIX_PROFILE_DIR)/devenv .
 
 .PHONY: nixcheck
 nixcheck:
