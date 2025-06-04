@@ -29,7 +29,7 @@ if nix profile list --no-pretty | grep -q "${NIX_PROFILE_URL}"; then
   echo "info: successfully upgraded dev tools"
 else
   echo "info: installing dev tools..."
-  nix profile install --profile "${NIX_PROFILE_LOC}"
+  nix profile install --profile "${NIX_PROFILE_LOC}" "${NIX_PROFILE_URL}"
   echo "info: successfully installed dev tools"
 fi
 
