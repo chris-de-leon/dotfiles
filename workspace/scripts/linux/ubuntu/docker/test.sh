@@ -59,6 +59,8 @@ assert_file_not_exists "${HOME}/workspace"
 assert_file_not_exists "${HOME}/Makefile"
 assert_file_not_exists "${HOME}/VERSION"
 assert_dir_not_exists "${HOME}/.github"
+assert_dir_not_exists "${HOME}/.git"
+assert_dir_not_exists "${HOME}/bin"
 
 # Check file content
 assert_line_exists "${HOME}/.bashrc-secrets" "export DOCKERHUB_USERNAME=\"dummy-username\""
