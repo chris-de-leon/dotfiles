@@ -1,0 +1,8 @@
+{{- $osid := .chezmoi.os -}}
+{{- if hasKey .chezmoi.osRelease "id" -}}
+{{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+
+{{- if eq $osid "linux-ubuntu" -}}
+{{-   include "./workspace/scripts/linux/ubuntu/chezmoi/init.sh" -}}
+{{- end -}}

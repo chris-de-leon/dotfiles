@@ -1,0 +1,19 @@
+{{- $gh_token := env "GITHUB_TOKEN" -}}
+{{- if eq $gh_token "" -}}
+{{-   $gh_token = (index (lastpass "chezmoi/github") 0).password -}}
+{{- end -}}
+
+{{- $gh_user := (fromJson (output "curl" "-s" "-H" (printf "Authorization: Bearer %s" $gh_token) "https://api.github.com/user")) -}}
+{{- $gh_name := $gh_user.login -}}
+{{- $gh_id := $gh_user.id -}}
+
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "https://{{ $gh_name }}:{{ $gh_token }}@github.com" > "${HOME}/.git-credentials"
+git config --global user.email "{{ $gh_id }}+{{ $gh_name }}@users.noreply.github.com"
+git config --global user.name "{{ $gh_name }}"
+git config --global init.defaultBranch "master"
+git config --global credential.helper "store"
+git config --global safe.directory "*"
+git config --global core.editor "vim"

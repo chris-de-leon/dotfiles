@@ -14,7 +14,7 @@
       system: let
         pkgs = import nixpkgs {inherit system;};
       in rec {
-        formatter = pkgs.alejandra; 
+        formatter = pkgs.alejandra;
 
         # Configures tmux to use interactive bash with a custom rc file:
         #  - https://unix.stackexchange.com/a/663023
@@ -33,6 +33,7 @@
         devenv = pkgs.buildEnv {
           name = "devenv";
           paths = [
+            pkgs.lastpass-cli
             pkgs.unzipNLS
             pkgs.starship
             pkgs.ripgrep
@@ -57,4 +58,3 @@
       }
     );
 }
-

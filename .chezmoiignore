@@ -1,0 +1,16 @@
+install.sh
+upgrade.sh
+flake.lock
+flake.nix
+README.md
+workspace
+Makefile
+VERSION
+bin
+
+{{- printf "\n" -}}
+{{- if eq (env "DOTFILES_RECIPE") "secrets" -}}
+{{- ".bashrc-secrets" | comment "# " -}}
+{{- else -}}
+.bashrc-secrets
+{{- end -}}
