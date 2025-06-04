@@ -25,11 +25,11 @@ NIX_PROFILE_URL="git+https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
 NIX_PROFILE_LOC="${HOME}/.nix-profile/profile.devenv"
 if nix profile list --no-pretty | grep -q "${NIX_PROFILE_URL}"; then
   echo "info: upgrading dev tools..."
-  nix profile upgrade --path "${NIX_PROFILE_LOC}" --all
+  nix profile upgrade --profile "${NIX_PROFILE_LOC}" --all
   echo "info: successfully upgraded dev tools"
 else
   echo "info: installing dev tools..."
-  nix profile install --path "${NIX_PROFILE_LOC}"
+  nix profile install --profile "${NIX_PROFILE_LOC}"
   echo "info: successfully installed dev tools"
 fi
 
