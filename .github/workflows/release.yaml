@@ -1,0 +1,101 @@
+name: Validate and Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write # grant permissions to create releases
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup
+        run: make nixshell
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        run: make test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_FOR_TEST }}
+
+  release:
+    name: Release
+    needs: validate
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check Version
+        id: check_version
+        run: |
+          echo "info: checking if VERSION file exists"
+          if [ ! -f "VERSION" ]; then
+            echo "info: VERSION file does not exist - skipping release"
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          else
+            echo "info: VERSION file exists"
+          fi
+
+          if [ "$(git rev-list --count HEAD)" -eq 1 ]; then
+            echo "info: first commit detected - proceeding with release"
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+            exit 0
+          else
+            echo "info: checking if VERSION file was modified"
+          fi
+
+          if git diff --name-only HEAD^ HEAD | grep -q '^VERSION$'; then
+            echo "info: detected VERSION file change - proceeding with release"
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "info: VERSION file has not changed - skipping release"
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Get Version
+        if: steps.check_version.outputs.changed == 'true'
+        id: get_version
+        run: VERSION="$(cat VERSION)" && echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check Release
+        if: steps.check_version.outputs.changed == 'true'
+        id: check_release
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          if [ -z "$(git tag -l "${TAG}")" ]; then
+            echo "info: tag ${TAG} does not exist ✅"
+            exit 0
+          else
+            echo "error: tag ${TAG} already exists ❌"
+            exit 1
+          fi
+
+      - name: Release
+        if: steps.check_version.outputs.changed == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release v${{ steps.get_version.outputs.version }}"
+          tag_name: "v${{ steps.get_version.outputs.version }}"
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          generate_release_notes: true
+          make_latest: true
+          prerelease: false
+          draft: false

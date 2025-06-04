@@ -1,0 +1,29 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: "actions/checkout@v4"
+
+      - name: Install Nix
+        uses: "cachix/install-nix-action@v31"
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup
+        run: make nixshell
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        run: make test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_FOR_TEST }}
