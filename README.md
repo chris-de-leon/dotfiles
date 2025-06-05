@@ -44,7 +44,7 @@
 To install, run the following command:
 
 ```sh
-GITHUB_TOKEN="<Your GitHub PAT>" curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh' | bash
+GITHUB_TOKEN="<Your GitHub PAT>" bash <(curl -fsSL -o install.sh 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
 ```
 
 ### Secrets
@@ -52,7 +52,8 @@ GITHUB_TOKEN="<Your GitHub PAT>" curl -fsSL 'https://raw.githubusercontent.com/c
 You can also install using a password manager:
 
 ```sh
-DOTFILES_AUTH="lastpass" LASTPASS_USERNAME="john.doe@email.com" curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh' | bash
+DOTFILES_AUTH="lastpass" LASTPASS_USERNAME="john.doe@email.com" bash <(curl -fsSL 'https://raw.githubuserconten
+t.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
 ```
 
 ## Upgrade
@@ -62,3 +63,5 @@ To upgrade, run the following command:
 ```sh
 curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/upgrade.sh' | bash
 ```
+
+If using a password manager, please make sure you log in before running this command.

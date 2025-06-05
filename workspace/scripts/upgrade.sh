@@ -12,7 +12,7 @@ DEV_PROFILE_LOC="$(dirname "${NIX_PROFILE_DIR}")/dev"
 
 # Upgrade dev tools
 echo "info: upgrading dev tools..."
-nix profile upgrade --path "${DEV_PROFILE_LOC}" --all
+nix profile upgrade --profile "${DEV_PROFILE_LOC}" --all
 echo "info: successfully upgraded dev tools"
 
 # Update configurations
