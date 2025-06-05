@@ -84,6 +84,16 @@ assert_link_exists() {
   fi
 }
 
+run_shellcheck() {
+  local filepath="${1:-}"
+  printf "info: running shellcheck on file '%s'... " "${filepath}"
+  if shellcheck --shell bash --exclude=SC2292 -o all "${filepath}"; then
+    echo "PASSED"
+  else
+    echo "FAILED" && exit 1
+  fi
+}
+
 create_stub() {
   local name="${1:-}"
   if [[ -z "${name}" ]]; then
@@ -101,7 +111,7 @@ create_stub() {
   stub+="\n"
   stub+="exit 0"
 
-  printf "info: creating '%s' stub..." "${name}"
+  printf "info: creating '%s' stub... " "${name}"
   echo -e "${stub}" >"${dir}/${name}"
   chmod +x "${dir}/${name}"
   export PATH="${dir}:${PATH}"
@@ -109,36 +119,27 @@ create_stub() {
 }
 
 get_nix_profiles_dir() {
-  local dir
+  local dir=""
   dir="$(readlink "${HOME}/.nix-profile")"
   dirname "${dir}"
 }
 
 setup_container() {
-  # define chezmoi directory
-  local chezmoi_dir=""
-  chezmoi_dir="$(pwd)/chezmoi"
+  # helper var(s)
+  local dir=""
 
   # apt configs
-  apt update && apt upgrade -y && apt install -y curl git sudo tzdata
+  apt-get update && apt-get upgrade -y && apt-get install -y curl git sudo tzdata
 
-  # install Nix: https://github.com/DeterminateSystems/nix-installer?tab=readme-ov-file#without-systemd-linux-only
-  # shellcheck disable=SC2312
-  curl --proto '=https' --tlsv1.2 -sSf -L 'https://install.determinate.systems/nix/tag/v3.6.2' | sh -s -- install linux --extra-conf "sandbox = false" --init none --no-confirm
-
-  # add `nix` to current shell
-  # shellcheck source=/dev/null
-  . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-
-  # define dev profile paths
-  local dev_profile_loc=""
-  local dev_profile_bin=""
-  dev_profile_loc="$(get_nix_profiles_dir)/dev"
-  dev_profile_bin="${dev_profile_loc}/bin"
+  # get the path to the chezmoi directory
+  dir="$(pwd)/chezmoi"
 
   # install dev tools
-  nix profile install --print-build-logs --profile "${dev_profile_loc}" "path:${chezmoi_dir}"
+  DOTFILES_NIX_URL="path:${dir}" bash "${dir}/workspace/scripts/install.sh"
 
-  # make tools visible on PATH
-  export PATH="${dev_profile_bin}:${PATH}"
+  # get the path to the dev profile bin
+  dir="$(get_nix_profiles_dir)/dev/bin"
+
+  # add dev tools to PATH
+  export PATH="${dir}:${PATH}"
 }

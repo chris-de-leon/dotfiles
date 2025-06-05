@@ -1,6 +1,6 @@
 {{- /* chezmoi:modify-template */ -}}
 {{- .chezmoi.stdin -}}
-{{- printf "\n" -}}
+{{- println -}}
 
 {{ "Dotfile Secrets" | comment "# " }}
 if [ -f "${HOME}/.bashrc-secrets" ]; then

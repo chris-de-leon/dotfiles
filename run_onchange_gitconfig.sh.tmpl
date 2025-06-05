@@ -1,6 +1,12 @@
-{{- $gh_token := env "GITHUB_TOKEN" -}}
-{{- if eq $gh_token "" -}}
+{{- $gh_token := "" -}}
+{{- if eq (env "DOTFILES_AUTH") "lastpass" -}}
 {{-   $gh_token = (index (lastpass "chezmoi/github") 0).password -}}
+{{- end -}}
+{{- if eq (env "DOTFILES_AUTH") "" -}}
+{{-   $gh_token = env "GITHUB_TOKEN" -}}
+{{- end -}}
+{{- if eq $gh_token "" -}}
+{{-   fail "Could not infer GitHub token" -}}
 {{- end -}}
 
 {{- $gh_user := (fromJson (output "curl" "-s" "-H" (printf "Authorization: Bearer %s" $gh_token) "https://api.github.com/user")) -}}

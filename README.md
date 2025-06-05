@@ -44,15 +44,15 @@
 To install, run the following command:
 
 ```sh
-curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh' | bash
+GITHUB_TOKEN="<Your GitHub PAT>" curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh' | bash
 ```
 
 ### Secrets
 
-If you want secrets for DockerHub, Git, Terraform, etc. to be exported from `.bashrc`, then you can either export these values as environment variables before running the command below or add them to LastPass then run the command below.
+You can also install using a password manager:
 
 ```sh
-DOTFILES_RECIPE="secrets" curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh' | bash
+DOTFILES_AUTH="lastpass" LASTPASS_USERNAME="john.doe@email.com" curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh' | bash
 ```
 
 ## Upgrade
