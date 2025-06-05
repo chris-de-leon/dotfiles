@@ -1,5 +1,11 @@
 # Dotfiles
 
+<div>
+  <a href="https://github.com/chris-de-leon/dotfiles/actions">
+  <img src="https://github.com/chris-de-leon/dotfiles/actions/workflows/release.yaml/badge.svg"/>
+ </a>
+</div>
+
 ## Setup
 
 ### MacOS, Windows, Linux
