@@ -44,7 +44,7 @@
 To install, run the following command:
 
 ```sh
-GITHUB_TOKEN="<Your GitHub PAT>" bash <(curl -fsSL -o install.sh 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
+GITHUB_TOKEN="<Your GitHub PAT>" bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
 ```
 
 ### Secrets
