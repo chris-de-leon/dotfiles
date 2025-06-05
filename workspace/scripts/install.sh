@@ -36,6 +36,13 @@ fi
 NIX_VERSION="$(nix --version)"
 echo "info: ${NIX_VERSION}"
 
+# This creates a symlink for ~/.nix-profile if it does not already exist.
+# This is important because we need to read this link to get the path to
+# the directory that our custom dev profile should be created in.
+echo "info: ensuring all packages in default profile are up to date"
+nix profile upgrade --all
+echo "info: all packages in default profile have been updated"
+
 # Use Nix to install dev tools
 NIX_PROFILE_DIR="$(readlink "${HOME}/.nix-profile")"
 DEV_PROFILE_LOC="$(dirname "${NIX_PROFILE_DIR}")/dev"
@@ -51,6 +58,12 @@ fi
 
 # Add dev tools to PATH so that we can invoke chezmoi (and others) later in this script if needed
 export PATH="${DEV_PROFILE_LOC}/bin:${PATH}"
+
+# A completely fresh VM may not have these directories created by default, so we'll need to create
+# them on our side if they don't already exist. If we don't do this then apps such as LastPass will
+# throw an error (LastPass itself doesn't automatically create the directories it uses).
+mkdir -p "${HOME}/.local/share"
+mkdir -p "${HOME}/.config"
 
 # NOTE: if no password manager is provided then all secrets (e.g. DockerHub, Terraform Cloud,
 # etc.) will be obtained from env vars. If they do not exist, then they will be excluded from
@@ -92,4 +105,4 @@ echo "info: successfully applied configurations"
 
 # Print success message
 echo "info: installation complete!"
-echo "info: to get started, open a new shell or run \`. ~/.bashrc\`"
+echo "info: to get started, please open a new shell"
