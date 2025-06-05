@@ -33,7 +33,6 @@ test:
 		-e DOCKERHUB_USERNAME="dummy-username" \
 		-e DOCKERHUB_PASSWORD="dummy-password" \
 		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
-		-e DOTFILES_RECIPE="secrets" \
 		-e TF_TOKEN="dummy-token" \
 		-e TZ=America/Los_Angeles \
 		-w /root/.local/share \
@@ -52,7 +51,6 @@ sandbox:
 		-e DOCKERHUB_USERNAME="dummy-username" \
 		-e DOCKERHUB_PASSWORD="dummy-password" \
 		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
-		-e DOTFILES_RECIPE="secrets" \
 		-e TF_TOKEN="dummy-token" \
 		-e TZ=America/Los_Angeles \
 		-w /root/.local/share \

@@ -34,6 +34,7 @@
           name = "devenv";
           paths = [
             pkgs.lastpass-cli
+            pkgs.shellcheck
             pkgs.unzipNLS
             pkgs.starship
             pkgs.ripgrep

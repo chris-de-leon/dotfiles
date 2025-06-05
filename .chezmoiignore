@@ -6,10 +6,3 @@ README.md
 workspace
 Makefile
 VERSION
-
-{{- printf "\n" -}}
-{{- if eq (env "DOTFILES_RECIPE") "secrets" -}}
-{{- ".bashrc-secrets" | comment "# " -}}
-{{- else -}}
-.bashrc-secrets
-{{- end -}}
