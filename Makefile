@@ -1,4 +1,4 @@
-NIX_PROFILE_DIR = $(PWD)/bin/profile
+NIX_PROFILE_DIR = $(PWD)/workspace/dist/profiles
 MAKEFLAGS += --no-print-directory
 SHELL = /bin/bash -eo pipefail
 UBUNTU_VERSION = 24.04
@@ -84,7 +84,8 @@ nixshell:
 .PHONY: nixprofile
 nixprofile:
 	@rm -rf $(NIX_PROFILE_DIR) && mkdir -p $(NIX_PROFILE_DIR)
-	@nix profile install --print-build-logs --refresh --profile $(NIX_PROFILE_DIR)/devenv .
+	@nix profile install --print-build-logs --refresh --profile $(NIX_PROFILE_DIR)/dev .
+	@du -shL $(NIX_PROFILE_DIR)/dev/bin
 
 .PHONY: nixcheck
 nixcheck:

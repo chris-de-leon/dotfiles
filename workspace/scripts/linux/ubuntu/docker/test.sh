@@ -22,6 +22,11 @@ echo "info: Running tests..."
 echo "info: ================"
 echo ""
 
+# Nix profile should be setup properly
+DEV_PROFILE="$(get_nix_profiles_dir)/dev"
+assert_link_exists "${DEV_PROFILE}"
+assert_dir_exists "${DEV_PROFILE}/bin"
+
 # Dotfiles should not exist yet
 assert_file_not_exists "${HOME}/.config/tmux/tmux.conf"
 assert_file_not_exists "${HOME}/.config/starship.toml"
@@ -60,12 +65,12 @@ assert_file_not_exists "${HOME}/Makefile"
 assert_file_not_exists "${HOME}/VERSION"
 assert_dir_not_exists "${HOME}/.github"
 assert_dir_not_exists "${HOME}/.git"
-assert_dir_not_exists "${HOME}/bin"
 
 # Check file content
 assert_line_exists "${HOME}/.bashrc-secrets" "export DOCKERHUB_USERNAME=\"dummy-username\""
 assert_line_exists "${HOME}/.bashrc-secrets" "export DOCKERHUB_PASSWORD=\"dummy-password\""
 assert_line_exists "${HOME}/.bashrc-secrets" "export TF_TOKEN=\"dummy-token\""
+assert_line_exists "${HOME}/.bashrc-tools" "    export PATH=\"\${DEV_PROFILE_BIN}:\${PATH}\""
 assert_line_exists "${HOME}/.bashrc-tools" "  eval \"\$(starship init bash)\""
 assert_line_exists "${HOME}/.bashrc" "  . \"\${HOME}/.bashrc-secrets\""
 assert_line_exists "${HOME}/.bashrc" "  . \"\${HOME}/.bashrc-tools\""

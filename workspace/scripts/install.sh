@@ -29,18 +29,18 @@ echo "info: ${NIX_VERSION}"
 
 # Use Nix to install dev tools
 NIX_PROFILE_URL="git+https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
-NIX_PROFILE_LOC="${HOME}/.nix-profile/profile.devenv"
 NIX_PROFILE_DIR="$(readlink "${HOME}/.nix-profile")"
-mkdir -p "${NIX_PROFILE_DIR}"
+DEV_PROFILE_LOC="$(dirname "${NIX_PROFILE_DIR}")/dev"
 if nix profile list --no-pretty | grep -q "${NIX_PROFILE_URL}"; then
   echo "info: upgrading dev tools..."
-  nix profile upgrade --profile "${NIX_PROFILE_LOC}" --all
+  nix profile upgrade --profile "${DEV_PROFILE_LOC}" --all
   echo "info: successfully upgraded dev tools"
 else
   echo "info: installing dev tools..."
-  nix profile install --profile "${NIX_PROFILE_LOC}" "${NIX_PROFILE_URL}"
+  nix profile install --profile "${DEV_PROFILE_LOC}" "${NIX_PROFILE_URL}"
   echo "info: successfully installed dev tools"
 fi
+export PATH="${DEV_PROFILE_LOC}/bin:${PATH}"
 
 # Get user credentials
 if [[ "${DOTFILES_RECIPE:-}" == "secrets" ]]; then

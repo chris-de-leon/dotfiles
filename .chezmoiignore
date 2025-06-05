@@ -6,7 +6,6 @@ README.md
 workspace
 Makefile
 VERSION
-bin
 
 {{- printf "\n" -}}
 {{- if eq (env "DOTFILES_RECIPE") "secrets" -}}

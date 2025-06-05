@@ -1,4 +1,13 @@
-{{- "Starship\n" | comment "# " -}}
+{{ "Nix Profile" | comment "# " }}
+if [[ -L "${HOME}/.nix-profile" ]]; then
+  NIX_PROFILE_DIR="$(readlink "${HOME}/.nix-profile")"
+  DEV_PROFILE_BIN="$(dirname "${NIX_PROFILE_DIR}")/dev/bin"
+  if [[ -d "${DEV_PROFILE_BIN}" ]]; then
+    export PATH="${DEV_PROFILE_BIN}:${PATH}"
+  fi
+fi
+
+{{ "Starship" | comment "# " }}
 if command -v starship &>/dev/null; then
   eval "$(starship init bash)"
 fi
