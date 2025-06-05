@@ -10,6 +10,7 @@
 1. Open a command prompt
 1. List the distros available for download: `wsl -l -o`
 1. Install an Ubuntu distro using: `wsl --install -d <distro>`
+1. Make it the default: `wsl --set-default <distro>`
 
 ## Upgrading
 
