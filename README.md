@@ -53,9 +53,9 @@ To install, run the following command:
 GITHUB_TOKEN="<Your GitHub PAT>" bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
 ```
 
-### Secrets
+### Bitwarden
 
-You can also install using a password manager:
+You can also install using Bitwarden:
 
 ```sh
 DOTFILES_AUTH="bitwarden" BW_CLIENTID="..." BW_CLIENTSECRET="..." bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
