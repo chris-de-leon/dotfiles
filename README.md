@@ -58,7 +58,7 @@ GITHUB_TOKEN="<Your GitHub PAT>" bash <(curl -fsSL 'https://raw.githubuserconten
 You can also install using a password manager:
 
 ```sh
-DOTFILES_AUTH="lastpass" LASTPASS_USERNAME="john.doe@email.com" bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
+DOTFILES_AUTH="bitwarden" BW_CLIENTID="..." BW_CLIENTSECRET="..." bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/workspace/scripts/install.sh')
 ```
 
 ## Upgrade

@@ -56,45 +56,57 @@ else
   echo "info: successfully installed dev tools"
 fi
 
-# Add dev tools to PATH so that we can invoke chezmoi (and others) later in this script if needed
+# Add the dev profile to PATH so that we can invoke tools
+# like chezmoi and others later in this script if needed
 export PATH="${DEV_PROFILE_LOC}/bin:${PATH}"
 
-# A completely fresh VM may not have these directories created by default, so we'll need to create
-# them on our side if they don't already exist. If we don't do this then apps such as LastPass will
-# throw an error (LastPass itself doesn't automatically create the directories it uses).
-mkdir -p "${HOME}/.local/share"
-mkdir -p "${HOME}/.config"
+# NOTE: for simplicty, only one password manager will be supported at a time
+# in the templates. At the moment, Bitwarden is used since it's open source,
+# highly secure, and has good tooling support. It also allows us to keep the
+# tooling stack free of the use of NIXPKGS_ALLOW_UNFREE=1 and `--impure` for
+# Nix shells. If the password manager is defined, then it is assumed that it
+# already contains all the necessary secrets for the chezmoi templates. If a
+# password manager is not provided, then all secrets for `~/.bashrc` will be
+# sourced from env vars. If some environment variables don't exist, then the
+# templates will exclude them. The only exception is the user's GITHUB_TOKEN
+# since it is required to configure GitHub for development.
+#
+# Helper variable to check if a valid auth method was provided
+IS_AUTHENTICATED='false'
 
-# NOTE: if no password manager is provided then all secrets (e.g. DockerHub, Terraform Cloud,
-# etc.) will be obtained from env vars. If they do not exist, then they will be excluded from
-# the templates. We still require the user's GitHub PAT to setup GitHub for development.
-#
-# NOTE: if a password manager is provided, then we'll assume that it already contains all the
-# necessary secrets for the chezmoi templates for simplicty. Additional password managers can
-# be added in the future with the way the code below is structured. If a new password manager
-# is added, then the templates will need to be updated accordingly to support it.
-#
-# Handle authentication
+# Bitwarden auth
+if [[ "${DOTFILES_AUTH}" == 'bitwarden' ]]; then
+  echo "info: dotfile secrets will be sourced from 1password"
+  if [[ -z "${BW_CLIENTID:-}" ]] && [[ -z "${BW_CLIENTSECRET}" ]]; then
+    echo "error: environment variables 'BW_CLIENTID' and 'BW_CLIENTSECRET' must be provided"
+    exit 1
+  else
+    export BW_SESSION=""
+    bw login --apikey
+    BW_SESSION="$(bw unlock --raw)"
+  fi
+  IS_AUTHENTICATED='true'
+fi
+
+# Environment variable auth
 if [[ -z "${DOTFILES_AUTH}" ]]; then
   echo "info: dotfile secrets will be sourced from environment variables"
   if [[ -z "${GITHUB_TOKEN:-}" ]]; then
-    echo "error: environment variable 'GITHUB_TOKEN' was not provided" && exit 1
-  else
-    export GITHUB_TOKEN="${GITHUB_TOKEN}"
+    echo "error: environment variable 'GITHUB_TOKEN' must be provided"
+    exit 1
   fi
-elif [[ "${DOTFILES_AUTH}" == 'lastpass' ]]; then
-  echo "info: dotfile secrets will be sourced from LastPass"
-  if [[ -z "${LASTPASS_USERNAME:-}" ]]; then
-    echo "error: environment variable 'LASTPASS_USERNAME' was not provided" && exit 1
-  else
-    lpass login --trust "${LASTPASS_USERNAME}"
-  fi
-else
-  echo "error: '${DOTFILES_AUTH}' is an invalid authentication method " && exit 1
+  IS_AUTHENTICATED='true'
 fi
 
-# If we're inside a Docker container, then exit early
+# If an invalid auth method was provided, then exit with an error
+if [[ "${IS_AUTHENTICATED}" == 'false' ]]; then
+  echo "error: '${DOTFILES_AUTH}' is an invalid authentication method "
+  exit 1
+fi
+
+# If this script is running inside a Docker container, exit early with a success status
 if [[ "${IS_DOCKER_LINUX_ENV}" == 'true' ]]; then
+  echo "info: script completed successfully - skipping chezmoi setup for now"
   exit 0
 fi
 

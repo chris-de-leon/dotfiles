@@ -10,4 +10,5 @@
 
 - [Files/Directories beginning with `.` are ignored](https://www.chezmoi.io/reference/special-files/)
 - [Including Shell Scripts in Templates](https://www.chezmoi.io/user-guide/manage-machine-to-machine-differences/#use-completely-different-dotfiles-on-different-machines)
+- [Create a chezmoi config file automatically](https://www.chezmoi.io/user-guide/setup/#create-a-config-file-on-a-new-machine-automatically)
 - [Modify Scripts](https://www.chezmoi.io/user-guide/manage-different-types-of-file/#manage-part-but-not-all-of-a-file)
