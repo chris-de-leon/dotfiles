@@ -64,7 +64,7 @@ sandbox:
 nixshell:
 	@if [ -z "$$CI" ]; then \
 		nix shell \
-			'github:NixOS/nixpkgs/nixos-25.05#lastpass-cli' \
+			'github:NixOS/nixpkgs/nixos-25.05#bitwarden-cli' \
 			'github:NixOS/nixpkgs/nixos-25.05#shellcheck' \
 			'github:NixOS/nixpkgs/nixos-25.05#chezmoi' \
 			'github:NixOS/nixpkgs/nixos-25.05#nodejs' \
@@ -72,11 +72,8 @@ nixshell:
 			--command bash; \
 	else \
 		nix profile install \
-			'github:NixOS/nixpkgs/nixos-25.05#lastpass-cli' \
 			'github:NixOS/nixpkgs/nixos-25.05#shellcheck' \
-			'github:NixOS/nixpkgs/nixos-25.05#chezmoi' \
-			'github:NixOS/nixpkgs/nixos-25.05#nodejs' \
-			'github:NixOS/nixpkgs/nixos-25.05#gh'; \
+			'github:NixOS/nixpkgs/nixos-25.05#chezmoi'; \
 	fi
 
 .PHONY: nixprofile

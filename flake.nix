@@ -33,7 +33,7 @@
         devenv = pkgs.buildEnv {
           name = "devenv";
           paths = [
-            pkgs.lastpass-cli
+            pkgs.bitwarden-cli
             pkgs.shellcheck
             pkgs.unzipNLS
             pkgs.starship

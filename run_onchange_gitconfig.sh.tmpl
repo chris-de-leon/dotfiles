@@ -1,6 +1,6 @@
 {{- $gh_token := "" -}}
-{{- if eq (env "DOTFILES_AUTH") "lastpass" -}}
-{{-   $gh_token = (index (lastpass "chezmoi/github") 0).password -}}
+{{- if eq (env "DOTFILES_AUTH") "bitwarden" -}}
+{{-   $gh_token = (bitwarden "item" "github").login.password -}}
 {{- end -}}
 {{- if eq (env "DOTFILES_AUTH") "" -}}
 {{-   $gh_token = env "GITHUB_TOKEN" -}}
