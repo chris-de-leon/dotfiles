@@ -45,9 +45,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Fetch tags
-        run: git fetch --tags
+        with:
+          fetch-depth: 0
 
       - name: Check Version
         id: check_version
