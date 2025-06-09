@@ -54,7 +54,7 @@ jobs:
           set -euo pipefail
 
           echo "info: checking if VERSION file exists"
-          if [ ! -f "VERSION" ]; then
+          if [ ! -f VERSION ]; then
             echo "info: VERSION file does not exist - skipping release"
             echo "changed=false" >> "${GITHUB_OUTPUT}"
             exit 0
@@ -77,27 +77,21 @@ jobs:
           if [ "${NEXT_VERSION}" == "${CURR_VERSION}" ]; then
             echo "info: version has not changed - skipping release"
             echo "changed=false" >> "${GITHUB_OUTPUT}"
-          else
-            echo "info: detected version change - proceeding with release"
-            echo "changed=true" >> "${GITHUB_OUTPUT}"
-          fi
-
-      - name: Get Version
-        if: steps.check_version.outputs.changed == 'true'
-        id: get_version
-        run: VERSION="$(cat VERSION)" && echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-
-      - name: Check Release
-        if: steps.check_version.outputs.changed == 'true'
-        id: check_release
-        run: |
-          set -euo pipefail
-          TAG="v${{ steps.get_version.outputs.version }}"
-          if [ -z "$(git tag -l "${TAG}")" ]; then
-            echo "info: tag ${TAG} does not exist ✅"
             exit 0
           else
-            echo "error: tag ${TAG} already exists ❌"
+            echo "info: potentially new version detected"
+          fi
+
+          echo "info: checking if version ${NEXT_VERSION} already exists"
+          if [ -z "$(git tag -l "v${NEXT_VERSION}")" ]; then
+            echo "info: version ${NEXT_VERSION} is available ✅"
+            echo "version=${NEXT_VERSION}" >> "${GITHUB_OUTPUT}"
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+            exit 0
+          else
+            echo "error: version ${NEXT_VERSION} already exists ❌"
+            echo "version=${NEXT_VERSION}" >> "${GITHUB_OUTPUT}"
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
             exit 1
           fi
 
@@ -105,8 +99,8 @@ jobs:
         if: steps.check_version.outputs.changed == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: "Release v${{ steps.get_version.outputs.version }}"
-          tag_name: "v${{ steps.get_version.outputs.version }}"
+          name: "Release v${{ steps.check_version.outputs.version }}"
+          tag_name: "v${{ steps.check_version.outputs.version }}"
           token: "${{ secrets.GITHUB_TOKEN }}"
           generate_release_notes: true
           make_latest: true
