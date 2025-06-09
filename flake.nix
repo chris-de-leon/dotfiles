@@ -12,8 +12,6 @@
     utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
-      in rec {
-        formatter = pkgs.alejandra;
 
         # Configures tmux to use interactive bash with a custom rc file:
         #  - https://unix.stackexchange.com/a/663023
@@ -50,6 +48,8 @@
             pkgs.jq
           ];
         };
+      in rec {
+        formatter = pkgs.alejandra;
 
         packages = {
           default = devenv;
