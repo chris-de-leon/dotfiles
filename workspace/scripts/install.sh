@@ -48,11 +48,11 @@ NIX_PROFILE_DIR="$(readlink "${HOME}/.nix-profile")"
 DEV_PROFILE_LOC="$(dirname "${NIX_PROFILE_DIR}")/dev"
 if nix profile list --no-pretty | grep -q "${DOTFILES_NIX_URL}"; then
   echo "info: upgrading dev tools..."
-  nix profile upgrade --profile "${DEV_PROFILE_LOC}" --all
+  nix profile upgrade --profile "${DEV_PROFILE_LOC}" --all --override-input "nixpkgs" "github:NixOS/nixpkgs/nixos-25.05"
   echo "info: successfully upgraded dev tools"
 else
   echo "info: installing dev tools..."
-  nix profile install --profile "${DEV_PROFILE_LOC}" "${DOTFILES_NIX_URL}"
+  nix profile install --profile "${DEV_PROFILE_LOC}" "${DOTFILES_NIX_URL}" --override-input "nixpkgs" "github:NixOS/nixpkgs/nixos-25.05"
   echo "info: successfully installed dev tools"
 fi
 
