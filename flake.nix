@@ -1,7 +1,6 @@
 {
-  # https://github.com/NixOS/nixpkgs/commits/master
   inputs = {
-    nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/129bbbf4c7edd21cb4ae9607b73a30db7db29eba.tar.gz";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
   };
 

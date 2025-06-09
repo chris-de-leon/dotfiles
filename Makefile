@@ -86,6 +86,10 @@ nixprofile:
 nixcheck:
 	nix run '.#fmt' -- --check .
 
+.PHONY: nixupdate
+nixupdate:
+	nix flake update
+
 .PHONY: nixshow
 nixshow:
 	nix flake show
