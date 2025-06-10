@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    # https://github.com/NixOS/nixpkgs/commits/nixos-25.05/
+    nixpkgs.url = "github:NixOS/nixpkgs/70c74b02eac46f4e4aa071e45a6189ce0f6d9265";
     utils.url = "github:numtide/flake-utils";
   };
 
@@ -29,24 +30,29 @@
 
         devenv = pkgs.buildEnv {
           name = "devenv";
-          paths = [
-            pkgs.bitwarden-cli
-            pkgs.shellcheck
-            pkgs.unzipNLS
-            pkgs.starship
-            pkgs.ripgrep
-            pkgs.lazygit
-            pkgs.gnumake
-            pkgs.chezmoi
-            pkgs.neovim
-            wrappedTmux
-            pkgs.gcc
-            pkgs.fzf
-            pkgs.zip
-            pkgs.vim
-            pkgs.fd
-            pkgs.jq
-          ];
+          paths =
+            [
+              pkgs.shellcheck
+              pkgs.unzipNLS
+              pkgs.starship
+              pkgs.ripgrep
+              pkgs.lazygit
+              pkgs.gnumake
+              pkgs.chezmoi
+              pkgs.neovim
+              wrappedTmux
+              pkgs.gcc
+              pkgs.fzf
+              pkgs.zip
+              pkgs.vim
+              pkgs.fd
+              pkgs.jq
+            ]
+            ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
+              # Needs to be installed separately for Darwin:
+              # https://github.com/NixOS/nixpkgs/issues/339576
+              pkgs.bitwarden-cli
+            ];
         };
       in rec {
         formatter = pkgs.alejandra;

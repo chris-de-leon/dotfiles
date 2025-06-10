@@ -8,8 +8,10 @@ NIX_INSTLR_URL="https://install.determinate.systems/nix/tag/v3.6.2"
 OS_KERNEL_NAME="$(uname -s)"
 
 # Dotfile Configurations
-DOTFILES_GIT_URL="https://github.com/chris-de-leon/dotfiles.git"
-DOTFILES_NIX_URL="${DOTFILES_NIX_URL:-git+${DOTFILES_GIT_URL}}"
+DOTFILES_REPO_OWNR="chris-de-leon"
+DOTFILES_REPO_NAME="dotfiles"
+DOTFILES_NIX_URL="${DOTFILES_NIX_URL:-github:${DOTFILES_REPO_OWNR}/${DOTFILES_REPO_NAME}}"
+DOTFILES_GIT_URL="https://github.com/${DOTFILES_REPO_OWNR}/${DOTFILES_REPO_NAME}.git"
 DOTFILES_AUTH="${DOTFILES_AUTH:-}"
 
 # Check if the script is being invoked inside a Docker container
@@ -48,11 +50,11 @@ NIX_PROFILE_DIR="$(readlink "${HOME}/.nix-profile")"
 DEV_PROFILE_LOC="$(dirname "${NIX_PROFILE_DIR}")/dev"
 if nix profile list --no-pretty | grep -q "${DOTFILES_NIX_URL}"; then
   echo "info: upgrading dev tools..."
-  nix profile upgrade --profile "${DEV_PROFILE_LOC}" --all --override-input "nixpkgs" "github:NixOS/nixpkgs/nixos-25.05"
+  nix profile upgrade --profile "${DEV_PROFILE_LOC}" --all
   echo "info: successfully upgraded dev tools"
 else
   echo "info: installing dev tools..."
-  nix profile install --profile "${DEV_PROFILE_LOC}" "${DOTFILES_NIX_URL}" --override-input "nixpkgs" "github:NixOS/nixpkgs/nixos-25.05"
+  nix profile install --profile "${DEV_PROFILE_LOC}" "${DOTFILES_NIX_URL}"
   echo "info: successfully installed dev tools"
 fi
 
@@ -76,7 +78,7 @@ IS_AUTHENTICATED='false'
 
 # Bitwarden auth
 if [[ "${DOTFILES_AUTH}" == 'bitwarden' ]]; then
-  echo "info: dotfile secrets will be sourced from 1password"
+  echo "info: dotfile secrets will be sourced from bitwarden"
   if [[ -z "${BW_CLIENTID:-}" ]] && [[ -z "${BW_CLIENTSECRET}" ]]; then
     echo "error: environment variables 'BW_CLIENTID' and 'BW_CLIENTSECRET' must be provided"
     exit 1
