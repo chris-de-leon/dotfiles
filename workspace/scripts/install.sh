@@ -62,6 +62,12 @@ fi
 # like chezmoi and others later in this script if needed
 export PATH="${DEV_PROFILE_LOC}/bin:${PATH}"
 
+# If this script is running inside a Docker container, exit early with a success status
+if [[ "${IS_DOCKER_LINUX_ENV}" == 'true' ]]; then
+  echo "info: script completed successfully - skipping chezmoi setup for now"
+  exit 0
+fi
+
 # NOTE: for simplicty, only one password manager will be supported at a time
 # in the templates. At the moment, Bitwarden is used since it's open source,
 # highly secure, and has good tooling support. It also allows us to keep the
@@ -72,9 +78,13 @@ export PATH="${DEV_PROFILE_LOC}/bin:${PATH}"
 # sourced from env vars. If some environment variables don't exist, then the
 # templates will exclude them. The only exception is the user's GITHUB_TOKEN
 # since it is required to configure GitHub for development.
-#
-# Helper variable to check if a valid auth method was provided
-IS_AUTHENTICATED='false'
+apply_configs() {
+  echo "info: applying configurations..."
+  chezmoi init "${DOTFILES_GIT_URL}" --apply
+  echo "info: successfully applied configurations"
+  echo "info: installation complete!"
+  echo "info: to get started, please open a new shell"
+}
 
 # Bitwarden auth
 if [[ "${DOTFILES_AUTH}" == 'bitwarden' ]]; then
@@ -83,11 +93,12 @@ if [[ "${DOTFILES_AUTH}" == 'bitwarden' ]]; then
     echo "error: environment variables 'BW_CLIENTID' and 'BW_CLIENTSECRET' must be provided"
     exit 1
   else
-    export BW_SESSION=""
     bw login --apikey
+    export BW_SESSION=""
     BW_SESSION="$(bw unlock --raw)"
+    apply_configs
+    exit 0
   fi
-  IS_AUTHENTICATED='true'
 fi
 
 # Environment variable auth
@@ -96,27 +107,12 @@ if [[ -z "${DOTFILES_AUTH}" ]]; then
   if [[ -z "${GITHUB_TOKEN:-}" ]]; then
     echo "error: environment variable 'GITHUB_TOKEN' must be provided"
     exit 1
+  else
+    apply_configs
+    exit 0
   fi
-  IS_AUTHENTICATED='true'
 fi
 
 # If an invalid auth method was provided, then exit with an error
-if [[ "${IS_AUTHENTICATED}" == 'false' ]]; then
-  echo "error: '${DOTFILES_AUTH}' is an invalid authentication method "
-  exit 1
-fi
-
-# If this script is running inside a Docker container, exit early with a success status
-if [[ "${IS_DOCKER_LINUX_ENV}" == 'true' ]]; then
-  echo "info: script completed successfully - skipping chezmoi setup for now"
-  exit 0
-fi
-
-# Run chezmoi
-echo "info: applying configurations..."
-chezmoi init "${DOTFILES_GIT_URL}" --apply
-echo "info: successfully applied configurations"
-
-# Print success message
-echo "info: installation complete!"
-echo "info: to get started, please open a new shell"
+echo "error: '${DOTFILES_AUTH}' is an invalid authentication method"
+exit 1
