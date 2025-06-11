@@ -30,6 +30,8 @@ test:
 	@docker container rm $(CONTAINER_NAME) || exit 0
 	@docker container create --rm \
 		-e DEBIAN_FRONTEND="noninteractive" \
+		-e INFISICAL_CLIENT_SECRET="dummy-client-secret" \
+		-e INFISICAL_CLIENT_ID="dummy-client-id" \
 		-e DOCKERHUB_USERNAME="dummy-username" \
 		-e DOCKERHUB_PASSWORD="dummy-password" \
 		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
@@ -48,6 +50,8 @@ sandbox:
 	@docker container rm $(CONTAINER_NAME) || exit 0
 	@docker container create --rm -it \
 		-e DEBIAN_FRONTEND="noninteractive" \
+		-e INFISICAL_CLIENT_SECRET="dummy-client-secret" \
+		-e INFISICAL_CLIENT_ID="dummy-client-id" \
 		-e DOCKERHUB_USERNAME="dummy-username" \
 		-e DOCKERHUB_PASSWORD="dummy-password" \
 		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
