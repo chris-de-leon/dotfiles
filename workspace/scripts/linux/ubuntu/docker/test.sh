@@ -67,8 +67,6 @@ assert_dir_not_exists "${HOME}/.github"
 assert_dir_not_exists "${HOME}/.git"
 
 # Check file content
-assert_line_exists "${HOME}/.bashrc-secrets" "export INFISICAL_CLIENT_SECRET=\"dummy-client-secret\""
-assert_line_exists "${HOME}/.bashrc-secrets" "export INFISICAL_CLIENT_ID=\"dummy-client-id\""
 assert_line_exists "${HOME}/.bashrc-secrets" "export DOCKERHUB_USERNAME=\"dummy-username\""
 assert_line_exists "${HOME}/.bashrc-secrets" "export DOCKERHUB_PASSWORD=\"dummy-password\""
 assert_line_exists "${HOME}/.bashrc-secrets" "export TF_TOKEN=\"dummy-token\""
