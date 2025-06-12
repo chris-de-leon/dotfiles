@@ -88,7 +88,7 @@ run_shellcheck "${HOME}/.bashrc-secrets"
 run_shellcheck "${HOME}/.bashrc-tools"
 
 # Check upgrade script (basic sanity check)
-printf "info: starting upgrade test"
+echo "info: starting upgrade test"
 LINE_COUNT_START="$(wc -l <"${HOME}/.bashrc")"
 BASHRC_CAT_START="$(cat "${HOME}/.bashrc")"
 DOTFILES_NIX_URL="path:${CHEZMOI_DIR}" bash "${CHEZMOI_DIR}/workspace/scripts/upgrade.sh"
