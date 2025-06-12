@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out the PR branch
+        run: git checkout ${{ github.ref_name }}
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31

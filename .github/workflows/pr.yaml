@@ -14,6 +14,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check out the PR branch
+        run: git checkout ${{ github.head_ref }}
+
       - name: Install Nix
         uses: "cachix/install-nix-action@v31"
         with:
