@@ -1,14 +1,5 @@
 {{- /* chezmoi:modify-template */ -}}
-{{- .chezmoi.stdin -}}
-{{- println -}}
-
-{{ "Dotfile Secrets" | comment "# " }}
-if [ -f "${HOME}/.bashrc-secrets" ]; then
-  . "${HOME}/.bashrc-secrets"
-fi
-
-{{ "Dotfile Tools" | comment "# " }}
-if [ -f "${HOME}/.bashrc-tools" ]; then
-  . "${HOME}/.bashrc-tools"
-fi
+{{- $line := `if [ -f "${HOME}/.bashrc-dotfiles" ]; then . "${HOME}/.bashrc-dotfiles"; fi` -}}
+{{- .chezmoi.stdin | replace (printf "\n%s" $line) "" -}}
+{{- printf "\n%s" $line -}}
 

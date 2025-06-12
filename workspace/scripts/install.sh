@@ -15,10 +15,10 @@ DOTFILES_GIT_URL="https://github.com/${DOTFILES_REPO_OWNR}/${DOTFILES_REPO_NAME}
 DOTFILES_AUTH="${DOTFILES_AUTH:-}"
 
 # Check if the script is being invoked inside a Docker container
-IS_DOCKER_LINUX_ENV="false"
-if [[ -f /.dockerenv ]] && [[ "${OS_KERNEL_NAME}" == "Linux" ]]; then
-  echo "info: detected Docker Linux environment"
-  IS_DOCKER_LINUX_ENV="true"
+IS_DOCKER_LINUX_ENV='false'
+if [[ -f /.dockerenv ]] && [[ "${OS_KERNEL_NAME}" == 'Linux' ]]; then
+  echo "info: Docker Linux environment detected"
+  IS_DOCKER_LINUX_ENV='true'
 fi
 
 # Install Nix if it isn't already installed
@@ -64,7 +64,7 @@ export PATH="${DEV_PROFILE_LOC}/bin:${PATH}"
 
 # If this script is running inside a Docker container, exit early with a success status
 if [[ "${IS_DOCKER_LINUX_ENV}" == 'true' ]]; then
-  echo "info: script completed successfully - skipping chezmoi setup for now"
+  echo "info: skipping chezmoi setup for now - script completed successfully"
   exit 0
 fi
 
@@ -82,7 +82,7 @@ apply_configs() {
   echo "info: applying configurations..."
   chezmoi init "${DOTFILES_GIT_URL}" --apply
   echo "info: successfully applied configurations"
-  echo "info: installation complete!"
+  echo "info: installation complete"
   echo "info: to get started, please open a new shell"
 }
 

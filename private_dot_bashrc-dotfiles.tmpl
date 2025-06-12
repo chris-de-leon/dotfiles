@@ -1,0 +1,10 @@
+{{ "Dotfile Secrets" | comment "# " }}
+if [ -f "${HOME}/.bashrc-secrets" ]; then
+  . "${HOME}/.bashrc-secrets"
+fi
+
+{{ "Dotfile Tools" | comment "# " }}
+if [ -f "${HOME}/.bashrc-tools" ]; then
+  . "${HOME}/.bashrc-tools"
+fi
+

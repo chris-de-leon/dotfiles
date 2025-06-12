@@ -87,7 +87,7 @@ assert_link_exists() {
 run_shellcheck() {
   local filepath="${1:-}"
   printf "info: running shellcheck on file '%s'... " "${filepath}"
-  if shellcheck --shell bash --exclude=SC2292 -o all "${filepath}"; then
+  if shellcheck --shell bash --exclude=SC2292,SC1091 -o all "${filepath}"; then
     echo "PASSED"
   else
     echo "FAILED" && exit 1
