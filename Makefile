@@ -1,8 +1,13 @@
 NIX_PROFILE_DIR = $(PWD)/workspace/dist/profiles
+
 MAKEFLAGS += --no-print-directory
-SHELL = /bin/bash -eo pipefail
-UBUNTU_VERSION = 24.04
-NIX_VERSION = 2.29.0
+MAKEFLAGS += --output-sync=target
+
+.SHELLFLAGS := -eo pipefail -c
+SHELL := /bin/bash
+
+UBUNTU_VERSION := 24.04
+NIX_VERSION := 2.31.1
 
 .PHONY: dotfiles
 dotfiles:
@@ -73,7 +78,7 @@ nixshell:
 			'github:NixOS/nixpkgs/nixos-25.05#gh' \
 			--command bash; \
 	else \
-		nix profile install \
+		nix profile add \
 			'github:NixOS/nixpkgs/nixos-25.05#shellcheck' \
 			'github:NixOS/nixpkgs/nixos-25.05#chezmoi'; \
 	fi
@@ -81,7 +86,7 @@ nixshell:
 .PHONY: nixprofile
 nixprofile:
 	@rm -rf $(NIX_PROFILE_DIR) && mkdir -p $(NIX_PROFILE_DIR)
-	@nix profile install --print-build-logs --refresh --profile $(NIX_PROFILE_DIR)/dev .
+	@nix profile add --print-build-logs --refresh --profile $(NIX_PROFILE_DIR)/dev .
 	@du -shL $(NIX_PROFILE_DIR)/dev/bin
 
 .PHONY: nixcheck

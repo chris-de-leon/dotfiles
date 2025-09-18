@@ -46,6 +46,7 @@
         devenv = pkgs.buildEnv {
           name = "devenv";
           paths = [
+            pkgs.tree-sitter
             pkgs.shellcheck
             pkgs.unzipNLS
             pkgs.starship

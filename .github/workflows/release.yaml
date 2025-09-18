@@ -21,8 +21,8 @@ jobs:
       - name: Checkout Branch
         run: git checkout ${{ github.ref_name }}
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
+      - name: Install Determinate Nix
+        uses: "DeterminateSystems/determinate-nix-action@v3"
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
