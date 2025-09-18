@@ -45,7 +45,7 @@
 
         # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/buildenv/default.nix#L1
         devenv = pkgs.buildEnv {
-          version = builtins.trimString (builtins.readFile ./VERSION);
+          version = builtins.replaceStrings ["\n"] [""] (builtins.readFile ./VERSION);
           name = "devenv";
           paths = [
             pkgs.tree-sitter
