@@ -75,6 +75,7 @@ nixshell:
 			'github:NixOS/nixpkgs/nixos-25.05#shellcheck' \
 			'github:NixOS/nixpkgs/nixos-25.05#chezmoi' \
 			'github:NixOS/nixpkgs/nixos-25.05#nodejs' \
+			'github:NixOS/nixpkgs/nixos-25.05#cargo' \
 			'github:NixOS/nixpkgs/nixos-25.05#gh' \
 			--command bash; \
 	else \
