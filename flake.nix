@@ -1,7 +1,7 @@
 {
   inputs = {
     # https://github.com/NixOS/nixpkgs/commits/nixos-25.05/
-    nixpkgs.url = "github:NixOS/nixpkgs/70c74b02eac46f4e4aa071e45a6189ce0f6d9265";
+    nixpkgs.url = "github:NixOS/nixpkgs/e9b7f2ff62b35f711568b1f0866243c7c302028d";
     utils.url = "github:numtide/flake-utils";
   };
 
