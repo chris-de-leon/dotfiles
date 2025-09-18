@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-nix profile install path:/root/.local/share/chezmoi
+nix profile add path:/root/.local/share/chezmoi
 
 cd ./chezmoi
 

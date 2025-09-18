@@ -4,7 +4,7 @@ set -eo pipefail
 
 # Helper Vars
 NIX_DAEMON_PTH="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
-NIX_INSTLR_URL="https://install.determinate.systems/nix/tag/v3.6.2"
+NIX_INSTLR_URL="https://install.determinate.systems/nix/tag/v3.11.2"
 OS_KERNEL_NAME="$(uname -s)"
 
 # Dotfile Configurations
@@ -25,9 +25,9 @@ fi
 if ! command -v nix &>/dev/null && [[ ! -f "${NIX_DAEMON_PTH}" ]]; then
   echo "info: installing Nix..."
   if [[ "${IS_DOCKER_LINUX_ENV}" == 'true' ]]; then
-    curl --proto '=https' --tlsv1.2 -sSf -L "${NIX_INSTLR_URL}" | sh -s -- install linux --extra-conf "sandbox = false" --init none --no-confirm
+    curl --proto '=https' --tlsv1.2 -sSf -L "${NIX_INSTLR_URL}" | sh -s -- install linux --no-confirm --determinate --extra-conf "sandbox = false" --init none
   else
-    curl --proto '=https' --tlsv1.2 -sSf -L "${NIX_INSTLR_URL}" | sh -s -- install --no-confirm
+    curl --proto '=https' --tlsv1.2 -sSf -L "${NIX_INSTLR_URL}" | sh -s -- install --no-confirm --determinate
   fi
 fi
 
@@ -54,7 +54,7 @@ if nix profile list --no-pretty | grep -q "${DOTFILES_NIX_URL}"; then
   echo "info: successfully upgraded dev tools"
 else
   echo "info: installing dev tools..."
-  nix profile install --profile "${DEV_PROFILE_LOC}" "${DOTFILES_NIX_URL}"
+  nix profile add --profile "${DEV_PROFILE_LOC}" "${DOTFILES_NIX_URL}"
   echo "info: successfully installed dev tools"
 fi
 
