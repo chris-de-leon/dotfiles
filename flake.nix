@@ -60,29 +60,33 @@
         devenv = pkgs.buildEnv {
           name = "devenv";
           version = vrsn;
-          paths = [
-            (
-              pkgs.runCommand "init" {} ''
-                mkdir -p $out/${etcd} && cp ${initializer}/bin/${init} $out/${etcd}/${init}
-              ''
-            )
-            pkgs.tree-sitter # dependency for LazyVim
-            pkgs.shellcheck # catch subtle issues with shell scripts faster
-            pkgs.starship # terminal coloring + useful info
-            pkgs.ripgrep # dependency for LazyVim
-            pkgs.lazygit # easier Git management
-            pkgs.gnumake # install `make`
-            pkgs.neovim # primary coding editor
-            pkgs.stow # for symlinking dotfiles
-            pkgs.gcc # dependency for LazyVim
-            pkgs.fzf # dependency for LazyVim
-            pkgs.vim # default editor for Git
-            pkgs.fd # dependency for LazyVim
-            pkgs.jq # easy JSON handling
-            pkgs.gh # take Github to the CLI
-            devkit # manage the dev env
-            tmux # split windows
-          ];
+          paths =
+            [
+              (
+                pkgs.runCommand "init" {} ''
+                  mkdir -p $out/${etcd} && cp ${initializer}/bin/${init} $out/${etcd}/${init}
+                ''
+              )
+              pkgs.tree-sitter # dependency for LazyVim
+              pkgs.shellcheck # catch subtle issues with shell scripts faster
+              pkgs.starship # terminal coloring + useful info
+              pkgs.ripgrep # dependency for LazyVim
+              pkgs.lazygit # easier Git management
+              pkgs.gnumake # install `make`
+              pkgs.neovim # primary coding editor
+              pkgs.stow # for symlinking dotfiles
+              pkgs.gcc # dependency for LazyVim
+              pkgs.fzf # dependency for LazyVim
+              pkgs.vim # default editor for Git
+              pkgs.fd # dependency for LazyVim
+              pkgs.jq # easy JSON handling
+              pkgs.gh # take Github to the CLI
+              devkit # manage the dev env
+              tmux # split windows
+            ]
+            ++ pkgs.lib.optionals (pkgs.stdenv.isDarwin) [
+              pkgs.gnused # dependency for LazyVim
+            ];
         };
       in rec {
         formatter = pkgs.alejandra;

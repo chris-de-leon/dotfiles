@@ -34,7 +34,7 @@ test:
 		-e DEBIAN_FRONTEND="noninteractive" \
 		-e DOTFILES_INSTALLER="$(REPO_DEST_PATH)/install.sh" \
 		-e DOTFILES_REPO_PATH="$(REPO_DEST_PATH)" \
-		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
+		-e GITHUB_TOKEN="$(shell gh auth token)" \
 		-e TZ=America/Los_Angeles \
 		-w $(REPO_DEST_PATH) \
 		--name $(CONTAINER_NAME) \
@@ -52,7 +52,7 @@ sandbox:
 		-e DEBIAN_FRONTEND="noninteractive" \
 		-e DOTFILES_INSTALLER="$(REPO_DEST_PATH)/install.sh" \
 		-e DOTFILES_REPO_PATH="$(REPO_DEST_PATH)" \
-		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
+		-e GITHUB_TOKEN="$(shell gh auth token)" \
 		-e TZ=America/Los_Angeles \
 		-w $(REPO_DEST_PATH) \
 		--name $(CONTAINER_NAME) \
@@ -86,13 +86,17 @@ nixprofile:
 nixupdate:
 	nix flake update
 
-.PHONY: nixshow
-nixshow:
-	nix flake show
+.PHONY: nixrepl
+nixrepl:
+	nix repl --expr 'import <nixpkgs>{}'
 
 .PHONY: nixlint
 nixlint:
 	nix run '.#fmt' -- --check .
+
+.PHONY: nixshow
+nixshow:
+	nix flake show
 
 .PHONY: nixlock
 nixlock:
@@ -111,7 +115,7 @@ nixbox:
 		-e NIX_CONFIG="experimental-features = nix-command flakes" \
 		-e DOTFILES_INSTALLER="$(REPO_DEST_PATH)/install.sh" \
 		-e DOTFILES_REPO_PATH="$(REPO_DEST_PATH)" \
-		-e GITHUB_TOKEN="$${GITHUB_TOKEN}" \
+		-e GITHUB_TOKEN="$(shell gh auth token)" \
 		-w $(REPO_DEST_PATH) \
 		--name $(CONTAINER_NAME) \
 		nixos/nix:$(NIX_VERSION) \
