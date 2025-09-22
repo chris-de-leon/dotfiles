@@ -1,8 +1,0 @@
-install.sh
-upgrade.sh
-flake.lock
-flake.nix
-README.md
-workspace
-Makefile
-VERSION

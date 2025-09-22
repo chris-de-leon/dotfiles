@@ -1,5 +1,0 @@
-{{- /* chezmoi:modify-template */ -}}
-{{- $line := `if [ -f "${HOME}/.bashrc-dotfiles" ]; then . "${HOME}/.bashrc-dotfiles"; fi` -}}
-{{- .chezmoi.stdin | replace (printf "\n%s" $line) "" -}}
-{{- printf "\n%s" $line -}}
-
