@@ -54,7 +54,7 @@ The `flake.nix` is the source of truth describing all packages that will be incl
 
 ## Installation
 
-Once you have a terminal and VM installed, you can setup the entire development environment with one script. This script is fully idempotent, so you can safely re-run it multiple times (and even with different flags) without any unintended consequences on the end state.
+Once you have a terminal and VM installed, you can setup the entire development environment with one command. You can safely re-run the command multiple times (and even with different flags) without any unintended consequences on the end state. After running it the first time, make sure that you exit your current shell session and create a new one for the changes to take effect.
 
 ### Quick Install
 
