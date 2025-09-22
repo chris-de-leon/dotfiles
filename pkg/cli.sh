@@ -84,7 +84,7 @@ refresh() {
 }
 
 cfgdirs() {
-  find "${DOTFILES_CNFG}" -mindepth 1 -maxdepth 1 -type d -exec printf '%f ' {} \;
+  find "${DOTFILES_CNFG}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | xargs
 }
 
 cfgpath() {
