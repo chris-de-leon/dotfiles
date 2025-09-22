@@ -107,11 +107,11 @@ devkit rollback "<ref>"
 
 If you're using a VM, the most straightforward approach to uninstall everything would be to back up your files, create a new VM, and add them there. This will fully ensure that no remnants of the dev environment are present. However, if you'd prefer not to do this, then the steps would be:
 
+1. Note down the path to the dev environment's Nix profile: `devkit profile`
 1. Clean up the dotfile symlinks: `devkit unstow`
 1. Remove the dotfiles repo: `rm -rf "$(devkit home)"`
-1. Note down the path to the dev environment's Nix profile: `devkit profile`
 1. Remove the line that activates the dev environment from `~/.bashrc`
-1. Exit and re-open the terminal (this will bring you back to a normal shell)
+1. Exit and re-open the terminal
 1. Remove the dotfiles Nix profile: `nix profile remove --profile "<path to dev env nix profile>" --all`
 1. Uninstall Nix: `/nix/nix-installer uninstall`
 1. Uninstall any other tools (docker, tailscale, etc.)
