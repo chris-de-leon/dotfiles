@@ -51,6 +51,7 @@ test_dotfiles() {
   assert_file_exists "${dev_ini}"
 
   assert_cmd_not_exists "nix"
+  # shellcheck source=/dev/null
   . "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
   assert_cmd_exists "nix"
 
