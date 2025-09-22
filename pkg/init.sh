@@ -12,9 +12,6 @@ if [ -L "${HOME}/.nix-profile" ]; then
 fi
 
 if command -v starship &>/dev/null; then
-  STARSHIP_CONFIG_FILE_PATH="${STARSHIP_CONFIG:-${HOME}/.config/starship.toml}"
-  if [ -f "${STARSHIP_CONFIG_FILE_PATH}" ]; then
-    STARSHIP_INIT="$(starship init bash)"
-    eval "${STARSHIP_INIT}"
-  fi
+  STARSHIP_INIT="$(starship init bash)"
+  eval "${STARSHIP_INIT}"
 fi
