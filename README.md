@@ -103,6 +103,46 @@ If you'd like to use a specific version of the development environment, then you
 devkit rollback "<ref>"
 ```
 
+If you'd like to upgrade Nix itself, then the following command can help with this:
+
+```bash
+sudo determinate-nixd upgrade
+```
+
+## Adding/Removing Packages
+
+The development environment has its own Nix profile that you can safely add more packages to. It is recommended to only add packages here that you intend to use globally/frequently otherwise you should consider using a `flake.nix` per project for more fine-grained control. The full list of packages can be found [here](https://search.nixos.org/packages). With that being said, new packages can be added with:
+
+```bash
+devkit add "nixpkgs#hello"
+```
+
+If you'd like to remove a package later, then the command below can be used:
+
+```bash
+devkit del "hello"
+```
+
+If you want to ensure a specific package is up to date, then you can use:
+
+```bash
+devkit up "hello"
+```
+
+All packages can be upgraded using:
+
+```bash
+devkit up --all
+```
+
+It's important to note that all these commands are aliases / convenience wrappers over the `nix profile` command, so each of these is equivalent to using something like:
+
+```bash
+nix profile <action> --profile "$(devkit profile)" ...
+```
+
+As a result, [all the documentation for `nix profile`](https://nix.dev/manual/nix/2.30/command-ref/new-cli/nix3-profile.html) applies here including the notes about locked/unlocked flake references.
+
 ## Uninstalling
 
 If you're using a VM, the most straightforward approach to uninstall everything would be to back up your files, create a new VM, and add them there. This will fully ensure that no remnants of the dev environment are present. However, if you'd prefer not to do this, then the steps would be:

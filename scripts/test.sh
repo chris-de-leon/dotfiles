@@ -77,6 +77,11 @@ test_dotfiles() {
   devkit hist
   devkit list
   devkit home
+
+  devkit add "nixpkgs#hello"
+  devkit up "hello"
+  devkit del "hello"
+  devkit up --all
 }
 
 test_tools() {
