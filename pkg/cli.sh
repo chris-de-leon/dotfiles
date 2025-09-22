@@ -84,7 +84,7 @@ refresh() {
 }
 
 cfgdirs() {
-  for item in "${DOTFILES_CNFG}"/*/; do [[ -d "${item}" ]] && printf '%s ' "$(basename "${item}")"; done
+  (cd "${DOTFILES_CNFG}" && ls -d -- *)
 }
 
 cfgpath() {
