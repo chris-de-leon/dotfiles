@@ -42,7 +42,7 @@
           };
         };
 
-        # Configures tmux to use interactive bash (see https://unix.stackexchange.com/a/663023 + https://askubuntu.com/a/746846)
+        # Configures tmux to use interactive bash (for terminal coloring) (see https://unix.stackexchange.com/a/663023 + https://askubuntu.com/a/746846)
         # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/trivial-builders/default.nix#L576
         tmux = pkgs.symlinkJoin {
           name = "tmux";
@@ -59,7 +59,6 @@
         # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/buildenv/default.nix#L1
         devenv = pkgs.buildEnv {
           name = "devenv";
-          version = vrsn;
           paths =
             [
               (

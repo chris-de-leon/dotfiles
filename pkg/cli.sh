@@ -77,14 +77,14 @@ refresh() {
   profile_path="$(profile)"
 
   if nix profile list --profile "${profile_path}" --no-pretty | grep -Fq "${DOTFILES_HOME}"; then
-    nix profile upgrade --profile "${profile_path}" --all
+    nix profile upgrade --profile "${profile_path}" dotfiles
   else
     nix profile add --profile "${profile_path}" "path:${DOTFILES_HOME}"
   fi
 }
 
 cfgdirs() {
-  for item in "${DOTFILES_CNFG}"/*/; do [[ -d "${item}" ]] && printf '%s ' "$(basename "${item}")"; done
+  (cd "${DOTFILES_CNFG}" && ls -d -- *)
 }
 
 cfgpath() {
@@ -118,17 +118,35 @@ clone() {
 hist() {
   local profile_path=""
   profile_path="$(profile)"
-  nix profile history --profile "${profile_path}"
+  nix profile history --profile "${profile_path}" "${@}"
 }
 
 list() {
   local profile_path=""
   profile_path="$(profile)"
-  nix profile list --profile "${profile_path}"
+  nix profile list --profile "${profile_path}" "${@}"
 }
 
 home() {
   echo "${DOTFILES_HOME}"
+}
+
+add() {
+  local profile_path=""
+  profile_path="$(profile)"
+  nix profile add --profile "${profile_path}" "${@}"
+}
+
+del() {
+  local profile_path=""
+  profile_path="$(profile)"
+  nix profile remove --profile "${profile_path}" "${@}"
+}
+
+up() {
+  local profile_path=""
+  profile_path="$(profile)"
+  nix profile upgrade --profile "${profile_path}" "${@}"
 }
 
 main() {
@@ -176,9 +194,18 @@ main() {
   home)
     home "${@:2}"
     ;;
+  add)
+    add "${@:2}"
+    ;;
+  del)
+    del "${@:2}"
+    ;;
+  up)
+    up "${@:2}"
+    ;;
   *)
     echo "Invalid option: ${op}"
-    echo "Usage: ${0} {initialize|rollback|migrate|version|profile|refresh|cfgdirs|cfgpath|unstow|restow|clone|hist|list|home}"
+    echo "Usage: ${0} {initialize|rollback|migrate|version|profile|refresh|cfgdirs|cfgpath|unstow|restow|clone|hist|list|home|add|del|up}"
     exit 1
     ;;
   esac
