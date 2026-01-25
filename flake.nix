@@ -1,7 +1,7 @@
 {
   inputs = {
     # https://github.com/NixOS/nixpkgs/commits/nixos-25.05/
-    nixpkgs.url = "github:NixOS/nixpkgs/e9b7f2ff62b35f711568b1f0866243c7c302028d";
+    nixpkgs.url = "github:NixOS/nixpkgs/ac62194c3917d5f474c1a844b6fd6da2db95077d";
     utils.url = "github:numtide/flake-utils";
   };
 
@@ -71,8 +71,9 @@
               pkgs.starship # terminal coloring + useful info
               pkgs.ripgrep # dependency for LazyVim
               pkgs.lazygit # easier Git management
-              pkgs.gnumake # install `make`
+              pkgs.gnumake # adds GNU `make` to env
               pkgs.neovim # primary coding editor
+              pkgs.unzip # used by nvim Mason
               pkgs.stow # for symlinking dotfiles
               pkgs.gcc # dependency for LazyVim
               pkgs.fzf # dependency for LazyVim
@@ -80,7 +81,7 @@
               pkgs.fd # dependency for LazyVim
               pkgs.jq # easy JSON handling
               pkgs.gh # take Github to the CLI
-              devkit # manage the dev env
+              devkit # for managing the dev env
               tmux # split windows
             ]
             ++ pkgs.lib.optionals (pkgs.stdenv.isDarwin) [
