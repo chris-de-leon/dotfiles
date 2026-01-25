@@ -11,9 +11,9 @@ NIX_VERSION := 2.31.1
 configs: DIR := "configs"
 configs:
 	rm -rf $(DIR)
-	mkdir -p $(DIR)/starship/.config && cp "$${HOME}/.config/starship.toml" $(DIR)/starship/.config
-	mkdir -p $(DIR)/nvim/.config && cp -r "$${HOME}/.config/nvim" $(DIR)/nvim/.config
-	mkdir -p $(DIR)/tmux/.config && cp -r "$${HOME}/.config/tmux" $(DIR)/tmux/.config
+	mkdir -p $(DIR)/starship/.config && cp -L "$${HOME}/.config/starship.toml" $(DIR)/starship/.config
+	mkdir -p $(DIR)/nvim/.config && cp -Lr "$${HOME}/.config/nvim" $(DIR)/nvim/.config
+	mkdir -p $(DIR)/tmux/.config && cp -Lr "$${HOME}/.config/tmux" $(DIR)/tmux/.config
 
 .PHONY: shlint
 shlint:

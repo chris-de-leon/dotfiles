@@ -3,7 +3,7 @@
 set -eo pipefail
 
 OS_KERNEL_NAME="$(uname -s | tr '[:upper:]' '[:lower:]')"
-INSTALLER_VERS="v3.11.2"
+INSTALLER_VERS="v3.15.2"
 
 info() { echo "info: ${1}"; }
 
