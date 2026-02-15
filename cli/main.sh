@@ -86,9 +86,9 @@ migrate() {
   # Get a space separated list of all the dotfile subdirectories
   local dirs && dirs="$( (cd "${conf}" && ls -d -- *))"
 
+  echo "unlinking ${conf} -> ${dirs}"
   # Clean up any symlinks on the current version
   # shellcheck disable=SC2086 # this should work as long as folder names have no spaces
-  echo "unlinking ${conf} -> ${dirs}"
   stow -D -t "${HOME}" -d "${conf}" ${dirs}
 
   # Checkout the desired version (if on master, then pull the latest files)
@@ -97,9 +97,9 @@ migrate() {
     git -C "${DEVKIT_REPO}" pull -X ours
   fi
 
+  echo "relinking ${conf} -> ${dirs}"
   # Now re-add the symlinks for the version we migrated to
   # shellcheck disable=SC2086 # this should work as long as folder names have no spaces
-  echo "relinking ${conf} -> ${dirs}"
   stow -R -t "${HOME}" -d "${conf}" ${dirs}
 
   # Upgrade the dotfiles package if it exists (otherwise add it)
