@@ -3,6 +3,7 @@
 set -eo pipefail
 
 OS_KERNEL_NAME="$(uname -s | tr '[:upper:]' '[:lower:]')"
+PATH_TO_BASHRC="${HOME}/.bashrc"
 INSTALLER_VERS="v3.15.2"
 
 info() { echo "info: ${1}"; }
@@ -30,7 +31,7 @@ main() {
 
   # NOTE: `nix profile upgrade --all` creates a symlink at "${HOME}/.nix-profile" if one
   # does not already exist. This is important because later we'll need to read from this
-  # symlink to get the path to the directory where our custom dev profile should live in
+  # symlink to perform some more setup steps for the dev environment.
   info "ensuring all packages in default profile are up to date"
   nix profile upgrade --all
   info "all packages in default profile are up to date"
@@ -41,17 +42,20 @@ main() {
     fail "no symlink exists at ${nix_profile_lnk}"
   fi
 
-  # Get the path to the current working directory
-  local workdir
-  workdir="$(pwd)"
-
-  # Run the setup script
-  info "running setup script..."
-  if [[ -f /.dockerenv ]]; then
-    nix run "path:${workdir}#setup" -- "${@}"
-  else
-    nix run "github:chris-de-leon/dotfiles#setup" -- "${@}"
+  # shellcheck disable=SC2016 # Single quotes are intentional - expression should not be expanded
+  local devkit_ini='if command -v devkit &>/dev/null; then eval "$(devkit init)"; fi'
+  if ! grep -Fxq "${devkit_ini}" "${PATH_TO_BASHRC}"; then
+    printf '\n%s\n' "${devkit_ini}" >>"${PATH_TO_BASHRC}"
   fi
+
+  # If we're in a docker env, then install from a local path otherwise use GitHub
+  local devkit_loc='github:chris-de-leon/dotfiles'
+  if [[ -f /.dockerenv ]]; then
+    devkit_loc="path:$(pwd)"
+  fi
+
+  # Setup dotfiles
+  nix shell "${devkit_loc}" --command devkit migrate
 }
 
 main "${@}"

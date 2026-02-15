@@ -5,64 +5,65 @@ MAKEFLAGS += --output-sync=target
 SHELL := /bin/bash
 
 UBUNTU_VERSION := 24.04
-NIX_VERSION := 2.31.1
+NIX_VERSION := 2.33.1
 
-.PHONY: configs
-configs: DIR := "configs"
-configs:
-	rm -rf $(DIR)
-	mkdir -p $(DIR)/starship/.config && cp -L "$${HOME}/.config/starship.toml" $(DIR)/starship/.config
-	mkdir -p $(DIR)/nvim/.config && cp -Lr "$${HOME}/.config/nvim" $(DIR)/nvim/.config
-	mkdir -p $(DIR)/tmux/.config && cp -Lr "$${HOME}/.config/tmux" $(DIR)/tmux/.config
+.PHONY: sandbox.ubuntu
+sandbox.ubuntu: MAIN ?= ./dev/sandbox/ubuntu/entrypoint.sh
+sandbox.ubuntu: OPTS ?= -it
+sandbox.ubuntu:
+	$(MAKE) sandbox VERSION="$(UBUNTU_VERSION)" \
+	  OPTS="$(OPTS)" MAIN="$(MAIN)" \
+		FILE="./dev/sandbox/ubuntu/Dockerfile" \
+		NAME="dotfiles.sandbox.ubuntu" \
+		IMG="dotfiles:sandbox-ubuntu"
 
-.PHONY: shlint
-shlint:
-	find . -type f -name "*.sh" -print -exec shellcheck -o all {} +
+.PHONY: sandbox.nix
+sandbox.nix: MAIN ?= ./dev/sandbox/nix/entrypoint.sh
+sandbox.nix: OPTS ?= -it
+sandbox.nix:
+	$(MAKE) sandbox VERSION="$(NIX_VERSION)" \
+	  OPTS="$(OPTS)" MAIN="$(MAIN)" \
+		FILE="./dev/sandbox/nix/Dockerfile" \
+		NAME="dotfiles.sandbox.nix" \
+		IMG="dotfiles:sandbox-nix"
+
+.PHONY: sandbox
+sandbox: export GH_TOKEN := $(shell gh auth token)
+sandbox: REPO := /root/.devkit/dotfiles
+sandbox: OPTS ?=
+sandbox:
+	docker build --build-arg VERSION="$${VERSION}" --build-arg WORKDIR="$(REPO)" --tag "$${IMG}" -f "$${FILE}" .
+	docker container create --rm --name "$${NAME}" -e GH_TOKEN="$${GH_TOKEN}" $(OPTS) "$${IMG}" bash "$${MAIN}"
+	docker cp "$(PWD)" "$${NAME}:$$(dirname $(REPO))"
+	docker container start -ai "$${NAME}"
 
 .PHONY: lint
 lint: nixlint
-lint: shlint
 lint:
+	@find . -type f -name "*.sh" -print -exec shellcheck -o all {} +
 	@echo "All files passed lint check ✅"
 
 .PHONY: test
-test: REPO_DEST_PATH := "/root/.local/share/chris-de-leon/dotfiles"
-test: CONTAINER_NAME := "dotfiles-test"
 test:
-	@docker container rm $(CONTAINER_NAME) || exit 0
-	@docker container create --rm \
-		-e DEBIAN_FRONTEND="noninteractive" \
-		-e DOTFILES_INSTALLER="$(REPO_DEST_PATH)/install.sh" \
-		-e DOTFILES_REPO_PATH="$(REPO_DEST_PATH)" \
-		-e GITHUB_TOKEN="$(shell gh auth token)" \
-		-e TZ=America/Los_Angeles \
-		-w $(REPO_DEST_PATH) \
-		--name $(CONTAINER_NAME) \
-		ubuntu:$(UBUNTU_VERSION) \
-		bash ./scripts/test.sh
-	@docker cp $(PWD) $(CONTAINER_NAME):$$(dirname $(REPO_DEST_PATH))
-	@docker container start -a $(CONTAINER_NAME)
+	$(MAKE) sandbox.ubuntu OPTS="" MAIN="./dev/testing/main.sh"
 
-.PHONY: sandbox
-sandbox: REPO_DEST_PATH := "/root/.local/share/chris-de-leon/dotfiles"
-sandbox: CONTAINER_NAME := "dotfiles-sandbox"
-sandbox:
-	@docker container rm $(CONTAINER_NAME) || exit 0
-	@docker container create --rm -it \
-		-e DEBIAN_FRONTEND="noninteractive" \
-		-e DOTFILES_INSTALLER="$(REPO_DEST_PATH)/install.sh" \
-		-e DOTFILES_REPO_PATH="$(REPO_DEST_PATH)" \
-		-e GITHUB_TOKEN="$(shell gh auth token)" \
-		-e TZ=America/Los_Angeles \
-		-w $(REPO_DEST_PATH) \
-		--name $(CONTAINER_NAME) \
-		ubuntu:$(UBUNTU_VERSION) \
-		bash ./scripts/sandbox.ubuntu.sh
-	@docker cp $(PWD) $(CONTAINER_NAME):$$(dirname $(REPO_DEST_PATH))
-	@docker container start -ai $(CONTAINER_NAME)
+.PHONY: cfg
+cfg: DIR := cfg
+cfg:
+	rm -rf "$(DIR)"
+	mkdir -p "$(DIR)/starship/.config" && cp -L "$${HOME}/.config/starship.toml" "$(DIR)/starship/.config"
+	mkdir -p "$(DIR)/nvim/.config" && cp -Lr "$${HOME}/.config/nvim" "$(DIR)/nvim/.config"
+	mkdir -p "$(DIR)/tmux/.config" && cp -Lr "$${HOME}/.config/tmux" "$(DIR)/tmux/.config"
 
-.PHONY: nixshell
-nixshell:
+.PHONY: bin
+bin: DIR := $(PWD)/dist/profiles
+bin:
+	@rm -rf "$(DIR)" && mkdir -p "$(DIR)"
+	@nix profile add --print-build-logs --refresh --profile "$(DIR)/dev" .
+	@du -shL "$(DIR)/dev/bin"
+
+.PHONY: sh
+sh:
 	@if [ -z "$$CI" ]; then \
 		nix shell \
 			'github:NixOS/nixpkgs/nixos-25.05#shellcheck' \
@@ -75,13 +76,6 @@ nixshell:
 			'github:NixOS/nixpkgs/nixos-25.05#shellcheck'; \
 	fi
 
-.PHONY: nixprofile
-nixprofile: NIX_PROFILE_DIR := $(PWD)/dist/profiles
-nixprofile:
-	@rm -rf $(NIX_PROFILE_DIR) && mkdir -p $(NIX_PROFILE_DIR)
-	@nix profile add --print-build-logs --refresh --profile $(NIX_PROFILE_DIR)/dev .
-	@du -shL $(NIX_PROFILE_DIR)/dev/bin
-
 .PHONY: nixupdate
 nixupdate:
 	nix flake update
@@ -92,7 +86,7 @@ nixrepl:
 
 .PHONY: nixlint
 nixlint:
-	nix run '.#fmt' -- --check .
+	nix fmt . -- --check .
 
 .PHONY: nixshow
 nixshow:
@@ -105,21 +99,4 @@ nixlock:
 .PHONY: nixfmt
 nixfmt:
 	nix fmt .
-
-.PHONY: nixbox
-nixbox: REPO_DEST_PATH := "/root/.local/share/chris-de-leon/dotfiles"
-nixbox: CONTAINER_NAME := "nixbox"
-nixbox:
-	@docker container rm $(CONTAINER_NAME) || exit 0
-	@docker container create --rm -it \
-		-e NIX_CONFIG="experimental-features = nix-command flakes" \
-		-e DOTFILES_INSTALLER="$(REPO_DEST_PATH)/install.sh" \
-		-e DOTFILES_REPO_PATH="$(REPO_DEST_PATH)" \
-		-e GITHUB_TOKEN="$(shell gh auth token)" \
-		-w $(REPO_DEST_PATH) \
-		--name $(CONTAINER_NAME) \
-		nixos/nix:$(NIX_VERSION) \
-		bash ./scripts/sandbox.nix.sh
-	@docker cp $(PWD) $(CONTAINER_NAME):$$(dirname $(REPO_DEST_PATH))
-	@docker container start -ai $(CONTAINER_NAME)
 

@@ -1,19 +1,32 @@
 #!/usr/bin/env bash
 
-assert_dir_not_exists() {
-  local dirpath="${1:-}"
-  printf "info: checking that directory '%s' does not exist... " "${dirpath}"
-  if [[ -d "${dirpath}" ]]; then
+assert_eq() {
+  local exp="${1:-}"
+  local act="${2:-}"
+  printf "info: checking that expected value '%s' matches actual value '%s'... " "${exp}" "${act}"
+  if [[ "${exp}" == "${act}" ]]; then
+    echo "PASSED"
+  else
+    echo "FAILED" && exit 1
+  fi
+}
+
+assert_not_empty() {
+  local key="${1:-}"
+  local val="${2:-}"
+  printf "info: checking that value '%s' is not empty... " "${key}"
+  if [[ -z "${val}" ]]; then
     echo "FAILED" && exit 1
   else
     echo "PASSED"
   fi
 }
 
-assert_dir_exists() {
-  local dirpath="${1:-}"
-  printf "info: checking that directory '%s' exists... " "${dirpath}"
-  if [[ -d "${dirpath}" ]]; then
+assert_empty() {
+  local key="${1:-}"
+  local val="${2:-}"
+  printf "info: checking that value '%s' is empty... " "${key}"
+  if [[ -z "${val}" ]]; then
     echo "PASSED"
   else
     echo "FAILED" && exit 1
