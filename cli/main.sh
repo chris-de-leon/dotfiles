@@ -81,7 +81,7 @@ migrate() {
 
   # Get the path to the directory where all dotfile subdirectories live
   local conf && conf="${DEVKIT_REPO}/cfg"
-  ls "${conf}"
+  ls "${DEVKIT_REPO}"
 
   # Get a space separated list of all the dotfile subdirectories
   local dirs && dirs="$( (cd "${conf}" && ls -d -- *))"
