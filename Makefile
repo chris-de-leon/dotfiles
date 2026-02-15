@@ -34,7 +34,7 @@ sandbox: OPTS ?=
 sandbox:
 	docker build --build-arg VERSION="$(VERSION)" --build-arg WORKDIR="$(REPO)" --tag "$(IMG)" -f "$(FILE)" .
 	docker container create --rm --name "$(NAME)" -e GH_TOKEN="$${GH_TOKEN}" $(OPTS) "$(IMG)" bash "$(MAIN)"
-	docker cp "$(PWD)" "$(NAME):$$(dirname $(REPO))"
+	docker cp "$(PWD)/." "$(NAME):$(REPO)"
 	docker container start -ai "$(NAME)"
 
 .PHONY: lint
