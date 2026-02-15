@@ -32,10 +32,10 @@ sandbox: export GH_TOKEN := $(shell gh auth token)
 sandbox: REPO := /root/.devkit/dotfiles
 sandbox: OPTS ?=
 sandbox:
-	docker build --build-arg VERSION="$${VERSION}" --build-arg WORKDIR="$(REPO)" --tag "$${IMG}" -f "$${FILE}" .
-	docker container create --rm --name "$${NAME}" -e GH_TOKEN="$${GH_TOKEN}" $(OPTS) "$${IMG}" bash "$${MAIN}"
-	docker cp "$(PWD)" "$${NAME}:$$(dirname $(REPO))"
-	docker container start -ai "$${NAME}"
+	docker build --build-arg VERSION="$(VERSION)" --build-arg WORKDIR="$(REPO)" --tag "$(IMG)" -f "$(FILE)" .
+	docker container create --rm --name "$(NAME)" -e GH_TOKEN="$${GH_TOKEN}" $(OPTS) "$(IMG)" bash "$(MAIN)"
+	docker cp "$(PWD)" "$(NAME):$$(dirname $(REPO))"
+	docker container start -ai "$(NAME)"
 
 .PHONY: lint
 lint: nixlint
