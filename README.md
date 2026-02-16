@@ -64,6 +64,8 @@ To setup a basic development environment with pre-configured dotfiles, you can u
 bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/install.sh')
 ```
 
+After running this command, exit and re-enter your shell so that the changes are applied.
+
 ### Configuration
 
 If you'd also like to opt-in to installing popular tools like Docker and have your Git config populated with sensible defaults, then you can use the following commands:
