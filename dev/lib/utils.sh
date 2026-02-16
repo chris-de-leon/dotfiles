@@ -40,5 +40,5 @@ util_use_sandbox_configs() {
 util_run_install_script() {
   local installer="${1:-.}/install.sh"
   echo "info: running script at '${installer}'... "
-  bash -x "${installer}" "${@}"
+  bash -x "${installer}" "${@:2}"
 }
