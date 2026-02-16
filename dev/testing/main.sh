@@ -59,9 +59,11 @@ test_main() {
   # Verify that dev env tools are available (after the nix daemon is activated)
   test_main_tools_exist() {
     assert_cmd_not_exists "starship"
+    assert_cmd_not_exists "lazygit"
     assert_cmd_not_exists "devkit"
     assert_cmd_not_exists "tmux"
     assert_cmd_not_exists "nvim"
+    assert_cmd_not_exists "vim"
     assert_cmd_not_exists "nix"
     assert_cmd_not_exists "jq"
     assert_cmd_not_exists "gh"
@@ -70,9 +72,11 @@ test_main() {
     . "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
 
     assert_cmd_exists "starship"
+    assert_cmd_exists "lazygit"
     assert_cmd_exists "devkit"
     assert_cmd_exists "tmux"
     assert_cmd_exists "nvim"
+    assert_cmd_exists "vim"
     assert_cmd_exists "nix"
     assert_cmd_exists "jq"
     assert_cmd_exists "gh"
