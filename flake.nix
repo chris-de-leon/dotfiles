@@ -77,7 +77,7 @@
           name = "devenv";
           paths = [
             (
-              # This copies the init script into the devenv so that it has a stable path and easier to source
+              # This copies the init script into the devenv at a stable path, which makes it easier to find + source
               pkgs.runCommand "init" {} ''
                 mkdir -p $out/${etcd} && cp ${init}/bin/${init.name} $out/${etcd}/${init.name}
               ''
