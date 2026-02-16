@@ -27,7 +27,7 @@ The `flake.nix` is the source of truth describing all packages that will be incl
 
 1. Install [Alacritty](https://github.com/alacritty/alacritty/releases) (on Ubuntu Desktop this can be installed from the App Center)
 
-1. Follow the guide [here](./docs/alacritty.md) to configure Alacritty
+1. Follow the guide [here](./doc/alacritty.md) to configure Alacritty
 
 1. Open an Alacritty terminal and create a new multipass VM:
 
@@ -44,11 +44,11 @@ The `flake.nix` is the source of truth describing all packages that will be incl
 
 ### WSL
 
-1. Follow the guide [here](./docs/wsl.md) to setup WSL
+1. Follow the guide [here](./doc/wsl.md) to setup WSL
 
 1. Install [Alacritty](https://github.com/alacritty/alacritty/releases)
 
-1. Follow the guide [here](./docs/alacritty.md) to configure Alacritty
+1. Follow the guide [here](./doc/alacritty.md) to configure Alacritty
 
 1. Open an Alacritty terminal to enter WSL
 
@@ -64,15 +64,16 @@ To setup a basic development environment with pre-configured dotfiles, you can u
 bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/install.sh')
 ```
 
-### Full Install
+### Configuration
 
-If you'd also like to opt-in to installing popular tools like Docker and have your Git config populated with sensible defaults, then the following command can be used:
+If you'd also like to opt-in to installing popular tools like Docker and have your Git config populated with sensible defaults, then you can use the following commands:
 
 ```sh
-bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/master/install.sh') \
-  --tailscale \
-  --docker \
-  --git
+# Configure git
+devkit gitauth
+
+# Install docker and tailscale
+devkit install --docker --tailscale
 ```
 
 ## CLI
@@ -80,18 +81,18 @@ bash <(curl -fsSL 'https://raw.githubusercontent.com/chris-de-leon/dotfiles/mast
 After running the install script, you'll have access to `devkit` - a CLI program that helps simplify the management of the development environment. Here are some simple commands that you can run:
 
 ```bash
+devkit install # Install other popular dev tools like docker and tailscale
+devkit migrate # Migrates the devenv to the latest version (or a specific commit)
+devkit gitauth # Authenticates to GitHub and configures the git CLI
+devkit profile # Shows the path to the nix profile where the devenv lives
 devkit version # Shows the CLI version
-devkit profile # Shows the path to the Nix profile for the dev environment
-devkit cfgdirs # Shows the names of the dotfile config directories
-devkit cfgpath # Shows the path to the directory containing the dotfile configs
-devkit home    # Shows the path to the dotfiles repository on your local machine
-devkit list    # Shows all installed packages in the dev environment
-devkit hist    # Shows the dev environment history
+devkit home    # Shows the path to the .devkit directory
+devkit init    # Shows the shell commands that will be run from ~/.bashrc
 ```
 
 ## Upgrades
 
-If new updates are pushed to this repository, then you can pull them locally with one command:
+If any new updates are pushed to this repository, then you can pull the latest changes with one command:
 
 ```bash
 devkit migrate
@@ -100,7 +101,7 @@ devkit migrate
 If you'd like to use a specific version of the development environment, then you can use the command below:
 
 ```bash
-devkit rollback "<ref>"
+devkit migrate "dotfiles-repo-commit-hash"
 ```
 
 If you'd like to upgrade Nix itself, then the following command can help with this:
@@ -109,49 +110,14 @@ If you'd like to upgrade Nix itself, then the following command can help with th
 sudo determinate-nixd upgrade
 ```
 
-## Adding/Removing Packages
-
-The development environment has its own Nix profile that you can safely add more packages to. It is recommended to only add packages here that you intend to use globally/frequently otherwise you should consider using a `flake.nix` per project for more fine-grained control. The full list of packages can be found [here](https://search.nixos.org/packages). With that being said, new packages can be added with:
-
-```bash
-devkit add "nixpkgs#hello"
-```
-
-If you'd like to remove a package later, then the command below can be used:
-
-```bash
-devkit del "hello"
-```
-
-If you want to ensure a specific package is up to date, then you can use:
-
-```bash
-devkit up "hello"
-```
-
-All packages can be upgraded using:
-
-```bash
-devkit up --all
-```
-
-It's important to note that all these commands are aliases / convenience wrappers over the `nix profile` command, so each of these is equivalent to using something like:
-
-```bash
-nix profile <action> --profile "$(devkit profile)" ...
-```
-
-As a result, [all the documentation for `nix profile`](https://nix.dev/manual/nix/2.30/command-ref/new-cli/nix3-profile.html) applies here including the notes about locked/unlocked flake references.
-
 ## Uninstalling
 
 If you're using a VM, the most straightforward approach to uninstall everything would be to back up your files, create a new VM, and add them there. This will fully ensure that no remnants of the dev environment are present. However, if you'd prefer not to do this, then the steps would be:
 
-1. Note down the path to the dev environment's Nix profile: `devkit profile`
-1. Clean up the dotfile symlinks: `devkit unstow`
-1. Remove the dotfiles repo: `rm -rf "$(devkit home)"`
+1. Remove the devkit directory: `rm -rf "$(devkit home)"`
+1. Clean up symlinks: `find ~/.config -xtype l -delete`
 1. Remove the line that activates the dev environment from `~/.bashrc`
 1. Exit and re-open the terminal
-1. Remove the dotfiles Nix profile: `nix profile remove --profile "<path to dev env nix profile>" --all`
+1. Remove the dotfiles Nix profile: `nix profile remove --all`
 1. Uninstall Nix: `/nix/nix-installer uninstall`
 1. Uninstall any other tools (docker, tailscale, etc.)

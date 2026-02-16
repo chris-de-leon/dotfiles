@@ -14,35 +14,32 @@
       system: let
         # Helper bindings
         vrsn = builtins.replaceStrings ["\n"] [""] (builtins.readFile ./VERSION);
-        home = ".local/share/chris-de-leon/dotfiles";
         pkgs = import nixpkgs {inherit system;};
         etcd = "etc/profile.d";
-        init = "init";
+
+        # A simple CLI tool for managing the dev environment
+        # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/trivial-builders/default.nix#L246
+        devkit = pkgs.writeShellApplication {
+          name = "devkit";
+          text = builtins.readFile ./cli/main.sh;
+          runtimeInputs = [pkgs.stow];
+          bashOptions = []; # bash options are already defined in the script
+          runtimeEnv = {
+            DEVKIT_INIT = "${etcd}/${init.name}";
+            DEVKIT_VRSN = vrsn;
+          };
+        };
 
         # This is the script that should be sourced from ~/.bashrc or ~/.profile to activate the dev environment
         # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/trivial-builders/default.nix#L246
-        initializer = pkgs.writeShellApplication {
-          name = init;
-          text = builtins.readFile ./pkg/init.sh;
+        init = pkgs.writeShellApplication {
+          name = "init";
+          text = builtins.readFile ./cli/init.sh;
           runtimeInputs = []; # requires no dependencies
           bashOptions = []; # no options should be added since we're going to source this script
         };
 
-        # A custom CLI tool for managing the dev environment
-        # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/trivial-builders/default.nix#L246
-        devkit = pkgs.writeShellApplication {
-          name = "devkit";
-          text = builtins.readFile ./pkg/cli.sh;
-          runtimeInputs = []; # packages will be provided by devenv
-          bashOptions = []; # already defined in the script
-          runtimeEnv = {
-            DOTFILES_INIT = "${etcd}/${init}";
-            DOTFILES_HOME = home;
-            DOTFILES_VRSN = vrsn;
-          };
-        };
-
-        # Configures tmux to use interactive bash (for terminal coloring) (see https://unix.stackexchange.com/a/663023 + https://askubuntu.com/a/746846)
+        # Configures tmux to use interactive bash for terminal coloring (see https://unix.stackexchange.com/a/663023 + https://askubuntu.com/a/746846)
         # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/trivial-builders/default.nix#L576
         tmux = pkgs.symlinkJoin {
           name = "tmux";
@@ -55,51 +52,50 @@
           '';
         };
 
+        # This adds Neovim and all dependencies needed for LazyVim (see https://www.lazyvim.org/)
+        # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/buildenv/default.nix#L1
+        lvim = pkgs.buildEnv {
+          name = "lvim";
+          paths =
+            [
+              pkgs.tree-sitter
+              pkgs.ripgrep
+              pkgs.neovim
+              pkgs.unzip # used by mason.nvim
+              pkgs.gcc
+              pkgs.fzf
+              pkgs.fd
+            ]
+            ++ pkgs.lib.optionals (pkgs.stdenv.isDarwin) [
+              pkgs.gnused
+            ];
+        };
+
         # This defines the packages that should be included in the development environment
         # Source: https://github.com/NixOS/nixpkgs/blob/ec36eadef0d12bcb98ce2946875198dbddcb7794/pkgs/build-support/buildenv/default.nix#L1
         devenv = pkgs.buildEnv {
           name = "devenv";
-          paths =
-            [
-              (
-                pkgs.runCommand "init" {} ''
-                  mkdir -p $out/${etcd} && cp ${initializer}/bin/${init} $out/${etcd}/${init}
-                ''
-              )
-              pkgs.tree-sitter # dependency for LazyVim
-              pkgs.shellcheck # catch subtle issues with shell scripts faster
-              pkgs.starship # terminal coloring + useful info
-              pkgs.ripgrep # dependency for LazyVim
-              pkgs.lazygit # easier Git management
-              pkgs.gnumake # adds GNU `make` to env
-              pkgs.neovim # primary coding editor
-              pkgs.unzip # used by nvim Mason
-              pkgs.stow # for symlinking dotfiles
-              pkgs.gcc # dependency for LazyVim
-              pkgs.fzf # dependency for LazyVim
-              pkgs.vim # default editor for Git
-              pkgs.fd # dependency for LazyVim
-              pkgs.jq # easy JSON handling
-              pkgs.gh # take Github to the CLI
-              devkit # for managing the dev env
-              tmux # split windows
-            ]
-            ++ pkgs.lib.optionals (pkgs.stdenv.isDarwin) [
-              pkgs.gnused # dependency for LazyVim
-            ];
+          paths = [
+            (
+              # This copies the init script into the devenv at a stable path, which makes it easier to find + source
+              pkgs.runCommand "init" {} ''
+                mkdir -p $out/${etcd} && cp ${init}/bin/${init.name} $out/${etcd}/${init.name}
+              ''
+            )
+            pkgs.starship
+            pkgs.lazygit
+            pkgs.vim
+            pkgs.jq
+            pkgs.gh
+            devkit
+            lvim
+            tmux
+          ];
         };
-      in rec {
+      in {
         formatter = pkgs.alejandra;
         packages = {
           default = devenv;
-          devkit = devkit;
-          fmt = formatter;
-          setup = pkgs.writeShellApplication {
-            name = "setup";
-            text = builtins.readFile ./pkg/setup.sh;
-            runtimeInputs = [devenv];
-            bashOptions = []; # already defined in the script
-          };
         };
       }
     );
