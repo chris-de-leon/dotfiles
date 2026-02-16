@@ -22,8 +22,11 @@ test_main() {
   local gitcfg="${HOME}/.gitconfig"
   local dotcfg="${HOME}/.config"
   local bashrc="${HOME}/.bashrc"
+  local nixdir=""
 
-  # Verify that `util_use_sandbox_configs` created .gitconfig
+  # Verify that `util_use_sandbox_configs` creates a .gitconfig
+  assert_file_not_exists "${gitcfg}"
+  util_use_sandbox_configs "${DOTFILES_REPO_PATH}"
   assert_file_exists "${gitcfg}"
 
   # NOTE: we want to avoid installing these tools in the container,
@@ -33,44 +36,50 @@ test_main() {
   create_stub "tailscale"
   create_stub "docker"
 
-  # Verify that nothing is installed yet
-  assert_line_not_exists "${bashrc}" "${dkinit}"
-  assert_link_not_exists "${dotcfg}/starship.toml"
-  assert_link_not_exists "${dotcfg}/tmux"
-  assert_link_not_exists "${dotcfg}/nvim"
-  assert_link_not_exists "${nixlnk}"
-  util_run_install_script "${DOTFILES_REPO_PATH}"
-  assert_line_exists "${bashrc}" "${dkinit}"
-  assert_link_exists "${dotcfg}/starship.toml"
-  assert_link_exists "${dotcfg}/tmux"
-  assert_link_exists "${dotcfg}/nvim"
-  assert_link_exists "${nixlnk}"
+  # Verify that the install script works as intended
+  test_main_installation() {
+    assert_line_not_exists "${bashrc}" "${dkinit}"
+    assert_link_not_exists "${dotcfg}/starship.toml"
+    assert_link_not_exists "${dotcfg}/tmux"
+    assert_link_not_exists "${dotcfg}/nvim"
+    assert_link_not_exists "${nixlnk}"
 
-  # Verify that the default nix profile symlink is available after install
-  printf "info: reading nix profile symlink... "
-  local nixdir="" && nixdir="$(readlink "${nixlnk}")"
-  echo "PASSED"
+    util_run_install_script "${DOTFILES_REPO_PATH}"
 
-  # Verify that the devenv bashrc init script exists at the expected path
-  assert_file_exists "${nixdir}/etc/profile.d/init"
+    assert_line_exists "${bashrc}" "${dkinit}"
+    assert_link_exists "${dotcfg}/starship.toml"
+    assert_link_exists "${dotcfg}/tmux"
+    assert_link_exists "${dotcfg}/nvim"
+    assert_link_exists "${nixlnk}"
 
-  # The Nix daemon is not online yet, so `nix` shouldn't be available
-  assert_cmd_not_exists "nix"
+    nixdir="$(readlink "${nixlnk}")"
+    assert_file_exists "${nixdir}/etc/profile.d/init"
+  }
 
-  # shellcheck source=/dev/null # Activate the Nix daemon
-  . "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+  # Verify that dev env tools are available (after the nix daemon is activated)
+  test_main_tools_exist() {
+    assert_cmd_not_exists "starship"
+    assert_cmd_not_exists "devkit"
+    assert_cmd_not_exists "tmux"
+    assert_cmd_not_exists "nvim"
+    assert_cmd_not_exists "nix"
+    assert_cmd_not_exists "jq"
+    assert_cmd_not_exists "gh"
 
-  # Verify that dev env tools are available now
-  assert_cmd_exists "starship"
-  assert_cmd_exists "devkit"
-  assert_cmd_exists "tmux"
-  assert_cmd_exists "nvim"
-  assert_cmd_exists "nix"
-  assert_cmd_exists "jq"
-  assert_cmd_exists "gh"
+    # shellcheck source=/dev/null
+    . "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+
+    assert_cmd_exists "starship"
+    assert_cmd_exists "devkit"
+    assert_cmd_exists "tmux"
+    assert_cmd_exists "nvim"
+    assert_cmd_exists "nix"
+    assert_cmd_exists "jq"
+    assert_cmd_exists "gh"
+  }
 
   # Verify that the gitauth command properly configures .gitconfig
-  test_main_gitauth() {
+  test_main_dk_gitauth() {
     local tmpvar=""
     git config --global init.defaultBranch ""
     git config --global core.editor ""
@@ -100,41 +109,43 @@ test_main() {
 
   # Verify that the CLI skips the installation of these tools since they
   # already exist on the machine (we added stubs for them earlier above)
-  test_main_install() {
+  test_main_dk_install() {
     devkit install --tailscale --docker
   }
 
   # This command is invoked by the install script - we verify that
   # calling it again causes no errors (it should be idempotent)
-  test_main_migrate() {
+  test_main_dk_migrate() {
     devkit migrate
   }
 
   # Verify that a non-empty version is returned
-  test_main_version() {
+  test_main_dk_version() {
     local tmpvar && tmpvar="$(devkit version)"
     assert_not_empty "devkit version" "${tmpvar}"
   }
 
   # Verify that the profile path is correct
-  test_main_profile() {
+  test_main_dk_profile() {
     local tmpvar && tmpvar="$(devkit profile)"
     assert_eq "${nixdir}" "${tmpvar}"
   }
 
   # Verify that the devkit home directory is correct
-  test_main_home() {
+  test_main_dk_home() {
     local tmpvar && tmpvar="$(devkit home)"
     assert_eq "$(dirname "${DOTFILES_REPO_PATH}")" "${tmpvar}"
   }
 
   # Run all subtests
-  test_main_gitauth
-  test_main_install
-  test_main_migrate
-  test_main_version
-  test_main_profile
-  test_main_home
+  test_main_installation
+  test_main_tools_exist
+  test_main_dk_gitauth
+  test_main_dk_install
+  test_main_dk_migrate
+  test_main_dk_version
+  test_main_dk_profile
+  test_main_dk_home
 }
 
 echo ""
@@ -143,7 +154,6 @@ echo "info: running testing suite..."
 echo "info: ========================"
 echo ""
 
-util_use_sandbox_configs "${DOTFILES_REPO_PATH}"
 test_main
 
 echo ""
