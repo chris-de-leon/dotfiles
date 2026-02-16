@@ -72,6 +72,7 @@ install() {
 
 migrate() {
   # Ensure that the repo exists
+  mkdir -p "${DEVKIT_HOME}"
   if [[ ! -d "${DEVKIT_REPO}" ]]; then
     git -C "${DEVKIT_HOME}" clone 'https://github.com/chris-de-leon/dotfiles.git'
   fi

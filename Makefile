@@ -62,6 +62,7 @@ bin:
 	@nix profile add --print-build-logs --refresh --profile "$(DIR)/dev" .
 	@du -shL "$(DIR)/dev/bin"
 
+# NOTE: nix shell nixpkgs#gnumake --command make sh
 .PHONY: sh
 sh:
 	@if [ -z "$$CI" ]; then \
