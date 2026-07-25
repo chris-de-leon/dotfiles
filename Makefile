@@ -5,7 +5,7 @@ MAKEFLAGS += --output-sync=target
 SHELL := /bin/bash
 
 UBUNTU_VERSION := 24.04
-NIX_VERSION := 2.33.1
+NIX_VERSION := 2.35.1
 
 .PHONY: sandbox.ubuntu
 sandbox.ubuntu: MAIN ?= ./dev/sandbox/ubuntu/entrypoint.sh

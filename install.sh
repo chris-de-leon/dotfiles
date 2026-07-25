@@ -4,7 +4,7 @@ set -eo pipefail
 
 OS_KERNEL_NAME="$(uname -s | tr '[:upper:]' '[:lower:]')"
 PATH_TO_BASHRC="${HOME}/.bashrc"
-INSTALLER_VERS="v3.15.2"
+INSTALLER_VERS="v3.21.8"
 
 info() { echo "info: ${1}"; }
 
